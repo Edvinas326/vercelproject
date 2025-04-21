@@ -1,0 +1,1162 @@
+/* Main page styles */
+
+/* Base styles */
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Profile styles */
+.profile-info img {
+    object-fit: cover;
+}
+
+/* Layout styles */
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+/* Navigation styles */
+.nav-link {
+    position: relative;
+    padding: 0.5rem 0;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #3B82F6;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Card styles */
+.card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Utility classes */
+.rounded-full {
+    border-radius: 9999px;
+}
+
+.shadow {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+}
+
+/* Dropdown menu transition */
+#user-dropdown {
+    transition: all 0.2s ease-in-out;
+    transform-origin: top right;
+}
+
+#user-dropdown.show {
+    display: block;
+    animation: dropdownFade 0.2s ease-in-out;
+}
+
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Post hover effects */
+.post:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile box styles */
+.profile-info {
+    transition: transform 0.2s ease;
+    text-align: left;
+    padding: 1.5rem;
+}
+
+.profile-info h2 {
+    text-align: left;
+    margin-bottom: 0.75rem;
+    padding-left: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.profile-info p {
+    line-height: 1.5;
+    text-align: left;
+    padding-left: 0.5rem;
+}
+
+/* Status indicator */
+.status-active {
+    position: relative;
+    padding-left: 1rem;
+}
+
+.status-active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10b981;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Additional hover effects */
+.nav-link:hover {
+    color: #3b82f6;
+    transition: color 0.2s ease;
+}
+
+.quick-links a {
+    transition: color 0.2s ease;
+}
+
+.quick-links a:hover {
+    color: #2563eb;
+}
+
+/* Profile image styles */
+.profile-image {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+    transition: box-shadow 0.2s ease;
+}
+
+.profile-image:hover {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.7);
+}
+
+/* Card hover effects */
+.bg-white {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode toggle styles */
+#dark-mode-toggle:checked ~ .dot {
+    transform: translateX(100%);
+}
+
+#dark-mode-toggle:checked ~ .block {
+    background-color: #4F46E5;
+}
+
+/* Dark mode styles */
+.dark {
+    color-scheme: dark;
+}
+
+.dark body {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.dark .bg-gray-100 {
+    background-color: #000000;
+}
+
+.dark .bg-white {
+    background-color: #1a1a1a;
+}
+
+.dark .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.dark .text-gray-400 {
+    color: #9ca3af;
+}
+
+.dark .text-gray-500 {
+    color: #d1d5db;
+}
+
+.dark .text-gray-600 {
+    color: #e5e7eb;
+}
+
+.dark .text-gray-700 {
+    color: #f3f4f6;
+}
+
+.dark .text-gray-800 {
+    color: #f9fafb;
+}
+
+.dark .text-gray-900 {
+    color: #ffffff;
+}
+
+.dark .border-gray-100 {
+    border-color: #374151;
+}
+
+.dark .border-b {
+    border-color: #374151;
+}
+
+.dark .hover\:bg-gray-100:hover {
+    background-color: #2d2d2d;
+}
+
+.dark .hover\:text-gray-900:hover {
+    color: #ffffff;
+}
+
+.dark textarea {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border-color: #374151;
+}
+
+.dark textarea::placeholder {
+    color: #9ca3af;
+}
+
+.dark .hover\:text-blue-500:hover {
+    color: #60a5fa;
+}
+
+.dark .hover\:text-blue-600:hover {
+    color: #60a5fa;
+}
+
+.dark .hover\:text-gray-600:hover {
+    color: #ffffff;
+}
+
+.dark .bg-blue-500 {
+    background-color: #3b82f6;
+}
+
+.dark .hover\:bg-blue-600:hover {
+    background-color: #2563eb;
+}
+
+.dark .bg-blue-100 {
+    background-color: #1e40af;
+    color: #93c5fd;
+}
+
+.dark .bg-green-100 {
+    background-color: #065f46;
+    color: #6ee7b7;
+}
+
+.dark .text-blue-600 {
+    color: #60a5fa;
+}
+
+.dark .text-green-600 {
+    color: #6ee7b7;
+}
+
+/* Add smooth transitions */
+body, 
+.bg-white, 
+.bg-gray-100,
+.text-gray-500,
+.text-gray-600,
+.text-gray-700,
+.text-gray-800,
+.text-gray-900,
+textarea,
+.hover\:bg-gray-100:hover {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Responsive Design - Updated */
+@media screen and (max-width: 1024px) {
+    .container {
+        width: 100%;
+        padding: 1rem;
+        margin: 0 auto;
+    }
+
+    .md\:grid-cols-4 {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .md\:col-span-2,
+    .md\:col-span-1 {
+        grid-column: span 1;
+        width: 100%;
+    }
+
+    /* Center align content */
+    .profile-info,
+    .card {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 600px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 0.75rem;
+    }
+
+    .nav-link {
+        padding: 0.5rem;
+    }
+
+    /* Adjust navigation layout */
+    nav .container {
+        padding: 0.5rem 1rem;
+    }
+
+    .profile-info {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .profile-info img {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+
+    /* Fix spacing issues */
+    .space-y-4 > * + * {
+        margin-top: 1rem;
+    }
+
+    /* Adjust grid layout */
+    .grid {
+        padding: 0;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    body {
+        font-size: 0.875rem;
+    }
+
+    .container {
+        padding: 0.5rem;
+    }
+
+    /* Adjust card margins and padding */
+    .card {
+        margin: 0.5rem 0;
+        border-radius: 0.375rem;
+    }
+
+    /* Fix navigation on small screens */
+    nav .flex {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Center align text elements */
+    .text-center-mobile {
+        text-align: center;
+    }
+
+    /* Adjust dropdown positioning */
+    .group-hover\:visible {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* Add general fixes */
+.flex {
+    display: flex;
+    align-items: center;
+}
+
+.grid {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Fix container width issues */
+.container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Ensure proper padding on all sides */
+.p-4 {
+    padding: 1rem;
+}
+
+/* Fix border radius consistency */
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
+/* Dropdown menu styles */
+.group:hover .group-hover\:visible {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.group .group-hover\:visible {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+/* Ensure dropdown is above other elements */
+.z-50 {
+    z-index: 50;
+}
+
+/* Add shadow to dropdown */
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Smooth transitions */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+/* Dark mode toggle dot movement */
+#dark-mode-toggle:checked ~ .dot {
+    transform: translateX(100%);
+    background-color: white;
+}
+
+/* Hover effects for menu items */
+.hover\:bg-gray-100:hover {
+    background-color: #f3f4f6;
+}
+
+/* Dropdown styles */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
+    background-color: white;
+    border-radius: 0.375rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000; /* Increased z-index */
+    min-width: 14rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.dropdown-menu.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Remove hidden class display property */
+.hidden {
+    display: none !important;
+}
+
+/* Menu items hover effect */
+.dropdown-menu a:hover,
+.dropdown-menu div:hover {
+    background-color: #f3f4f6;
+}
+
+/* Dark mode styles for dropdown */
+.dark .dropdown-menu {
+    background-color: #1a1a1a;
+    border: 1px solid #374151;
+}
+
+.dark .dropdown-menu a:hover,
+.dark .dropdown-menu div:hover {
+    background-color: #374151;
+}
+
+/* Animation for dropdown */
+@keyframes dropdownAnimation {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-menu.show {
+    animation: dropdownAnimation 0.2s ease-out forwards;
+}
+
+/* Mobile menu animations */
+@media (max-width: 768px) {
+    .mobile-menu-enter {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    .mobile-menu-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 200ms, transform 200ms;
+    }
+
+    .mobile-menu-exit {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .mobile-menu-exit-active {
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 200ms, transform 200ms;
+    }
+}
+
+/* Notification badge animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.notification-badge {
+    animation: pulse 2s infinite;
+}
+
+/* User menu button hover effect */
+#userMenuButton:hover img {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+}
+
+/* Settings button rotation animation */
+#settingsButton svg {
+    transition: transform 0.3s ease;
+}
+
+#settingsButton:hover svg {
+    transform: rotate(45deg);
+}
+
+/* Settings dropdown styles */
+.settings-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
+    min-width: 12rem;
+    z-index: 50;
+    background-color: white;
+    border-radius: 0.375rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.show-dropdown {
+    display: block;
+    animation: dropdownAnimation 0.2s ease-out forwards;
+}
+
+@keyframes dropdownAnimation {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dark mode toggle styles */
+.dot {
+    transition: transform 0.2s ease;
+}
+
+#dark-mode-toggle:checked ~ .dot {
+    transform: translateX(100%);
+}
+
+#dark-mode-toggle:checked ~ .block {
+    background-color: #4F46E5;
+}
+
+/* Dark mode styles for dropdown */
+.dark .settings-dropdown {
+    background-color: #1a1a1a;
+    border-color: #374151;
+}
+
+.dark .settings-dropdown a,
+.dark .settings-dropdown div {
+    color: #e5e7eb;
+}
+
+.dark .settings-dropdown a:hover,
+.dark .settings-dropdown div:hover {
+    background-color: #374151;
+}
+
+.dark .settings-dropdown .border-t {
+    border-color: #374151;
+}
+
+/* Quick Links styles */
+.quick-link-card {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    min-height: 120px; /* Added minimum height */
+}
+
+.quick-link-card:hover {
+    transform: translateY(-4px);
+}
+
+.quick-link-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.quick-link-card:hover::after {
+    opacity: 1;
+}
+
+/* Dark mode support for Quick Links */
+.dark .quick-link-card {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .quick-link-card:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Quick Access box gradient - Light mode (default blue) */
+.bg-gradient-to-br.from-blue-500.to-blue-600 {
+    background: linear-gradient(to bottom right, #3B82F6, #2563EB);
+}
+
+/* Dark mode gradient for Quick Access box */
+.dark .bg-gradient-to-br.from-blue-500.to-blue-600 {
+    background: linear-gradient(to bottom right, #1e293b, #0f172a);
+}
+
+/* Quick Access cards - Light mode */
+.bg-white\/10 {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.hover\:bg-white\/20:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Dark mode background for Quick Access cards */
+.dark .bg-white\/10 {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .hover\:bg-white\/20:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Text color adjustments for dark mode */
+.dark .text-white {
+    color: #e5e7eb;
+}
+
+.dark .quick-link-card:hover .text-white {
+    color: #ffffff;
+}
+
+/* Add a subtle pulse animation to the icons */
+.quick-link-card .text-3xl {
+    transition: transform 0.3s ease;
+}
+
+.quick-link-card:hover .text-3xl {
+    transform: scale(1.1);
+}
+
+/* Add responsive adjustments */
+@media (max-width: 640px) {
+    .quick-link-card {
+        min-height: 100px;
+        padding: 1rem;
+    }
+    
+    .quick-link-card .text-3xl {
+        font-size: 2rem;
+    }
+    
+    .quick-link-card span {
+        font-size: 0.875rem;
+    }
+}
+
+/* Dark mode transition - remove color transition */
+html {
+    transition: background-color 0.15s ease;
+}
+
+/* Only transition specific properties */
+.quick-link-card,
+.event-item,
+.calendar div,
+.bg-gradient-to-br {
+    transition: background-color 0.15s ease, 
+                transform 0.15s ease, 
+                border-color 0.15s ease !important;
+}
+
+/* Remove the universal transition */
+* {
+    /* Remove this block entirely */
+    /* transition-duration: 0.15s !important; */
+}
+
+/* Keep icon transitions */
+#darkModeToggle svg {
+    transition: opacity 0.15s ease;
+}
+
+/* Remove text color transitions */
+.text-gray-600,
+.text-gray-700,
+.text-gray-800,
+.text-gray-900,
+.text-white,
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-gray-800,
+.dark .text-gray-900,
+.dark .text-white {
+    transition: none !important;
+}
+
+/* Enhanced Post Styles */
+.post-creation-box {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.post-creation-box:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Post Card Animations */
+.post-card {
+    transition: all 0.2s ease;
+}
+
+.post-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Enhanced Button Styles */
+.action-button {
+    @apply flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200;
+}
+
+.action-button:hover {
+    @apply transform scale-105;
+}
+
+/* Dark Mode Enhancements */
+.dark .post-creation-box {
+    background-color: #1a1a1a;
+    border-color: #2d3748;
+}
+
+.dark .post-card {
+    background-color: #1a1a1a;
+    border-color: #2d3748;
+}
+
+.dark .post-actions {
+    background-color: #111827;
+    border-color: #374151;
+}
+
+/* Scrollbar Styling */
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #CBD5E0 #EDF2F7;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #EDF2F7;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #CBD5E0;
+    border-radius: 3px;
+}
+
+/* Hover Effects */
+.hover-lift {
+    transition: transform 0.2s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+}
+
+/* Card Shadows */
+.card-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.card-shadow:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Profile Card Enhancements */
+.profile-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Academic Info Cards */
+.academic-card {
+    transition: all 0.2s ease;
+}
+
+.academic-card:hover {
+    transform: scale(1.02);
+}
+
+/* Dark Mode Support */
+.dark .profile-card {
+    background-color: #1a1a1a;
+}
+
+.dark .academic-card {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.dark .academic-card:hover {
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+/* Profile Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.stat-card {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: rgba(59, 130, 246, 0.1);
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+/* Dark mode adjustments */
+.dark .bg-gray-50 {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .hover\:bg-gray-100:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .border-t {
+    border-color: #2d3748;
+}
+
+.profile-photo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-photo {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode support */
+.dark .profile-photo {
+    border-color: #374151;
+}
+
+/* Remove the old button styles since we're using Tailwind classes */
+#upload-photo-btn {
+    /* styles are now handled by Tailwind classes in the HTML */
+}
+
+/* Dropdown menu styling */
+.post-dropdown {
+  transform-origin: top right;
+  opacity: 0;
+  transform: scale(0.95) translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.post-dropdown:not(.hidden) {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Enhanced dropdown item styling */
+.post-dropdown button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  padding-left: 1rem;
+  border-left: 3px solid transparent;
+}
+
+.post-dropdown button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-left-color: #3b82f6;
+  transform: translateX(2px);
+}
+
+.post-dropdown button svg {
+  transition: transform 0.2s ease;
+}
+
+.post-dropdown button:hover svg {
+  transform: scale(1.2);
+}
+
+/* Dark mode adjustments */
+.dark .post-dropdown {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+}
+
+.dark .post-dropdown button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Animation for dropdown menu closing */
+.post-dropdown.closing {
+  opacity: 0;
+  transform: scale(0.95) translateY(-10px);
+  transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Animation for post actions */
+.animate-pulse {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Edit modal transition */
+#edit-post-modal {
+  transition: opacity 0.3s ease;
+}
+
+#edit-post-modal.opacity-0 {
+  opacity: 0;
+}
+
+/* Menu button animation */
+.post-menu-btn {
+  position: relative;
+  z-index: 10;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.post-menu-btn:hover {
+  transform: scale(1.1);
+}
+
+.post-menu-btn:active {
+  transform: scale(0.95);
+}
+
+/* Add a ripple effect for the menu button */
+.post-menu-btn::after {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.1) 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.5s;
+}
+
+.post-menu-btn:active::after {
+  transform: scale(0, 0);
+  opacity: 0.3;
+  transition: 0s;
+}
+
+/* Active state for menu button */
+.post-menu-btn.active {
+  transform: rotate(90deg);
+  color: #3b82f6;
+}
+
+/* Dark mode active state */
+.dark .post-menu-btn.active {
+  color: #60a5fa;
+}
+
+/* Report Modal Styles */
+#report-modal {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+#report-modal.fade-out {
+  opacity: 0;
+}
+
+#report-modal .bg-white {
+  transform: translateY(0);
+  transition: transform 0.3s ease-in-out;
+}
+
+#report-modal.fade-out .bg-white {
+  transform: translateY(20px);
+}
+
+.fixed.bottom-4.right-4 {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fixed.bottom-4.right-4.fade-out {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* Dropdown transition */
+.post-dropdown {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  transform-origin: top right;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.post-dropdown.hidden {
+  display: none;
+}
+
+.post-dropdown.closing {
+  opacity: 0;
+  transform: scale(0.95);
+  display: block;
+} 

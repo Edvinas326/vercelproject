@@ -1,0 +1,68 @@
+<div id="gpaCalculatorModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-gray-900">GPA Calculator</h3>
+            <button id="closeGpaModal" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Calculator Form -->
+        <div class="space-y-4">
+            <div id="courseInputs" class="space-y-3">
+                <!-- Course 1 -->
+                <div class="course-input flex space-x-2">
+                    <input type="text" placeholder="Course Name" class="flex-1 p-2 border rounded">
+                    <select class="w-24 p-2 border rounded">
+                        <option value="4.0">A (4.0)</option>
+                        <option value="3.7">A- (3.7)</option>
+                        <option value="3.3">B+ (3.3)</option>
+                        <option value="3.0">B (3.0)</option>
+                        <option value="2.7">B- (2.7)</option>
+                        <option value="2.3">C+ (2.3)</option>
+                        <option value="2.0">C (2.0)</option>
+                        <option value="1.7">C- (1.7)</option>
+                        <option value="1.3">D+ (1.3)</option>
+                        <option value="1.0">D (1.0)</option>
+                        <option value="0.0">F (0.0)</option>
+                    </select>
+                    <select class="w-24 p-2 border rounded">
+                        <option value="1">1 credit</option>
+                        <option value="2">2 credits</option>
+                        <option value="3" selected>3 credits</option>
+                        <option value="4">4 credits</option>
+                        <option value="5">5 credits</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Add/Remove Course Buttons -->
+            <div class="flex space-x-2">
+                <button id="addCourse" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+                    Add Course
+                </button>
+                <button id="removeCourse" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
+                    Remove Course
+                </button>
+            </div>
+
+            <!-- Calculate Button -->
+            <button id="calculateGpa" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">
+                Calculate GPA
+            </button>
+
+            <!-- Result -->
+            <div class="mt-4 p-4 bg-gray-50 rounded">
+                <p class="text-center">
+                    Your GPA: <span id="gpaResult" class="font-bold text-xl">0.00</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add type="module" to the script tag -->
+<script src="gpa-calculator.js" type="module"></script> 

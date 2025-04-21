@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct API Test</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .card {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        textarea {
+            height: 100px;
+        }
+        pre {
+            background: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Direct API Call Test</h1>
+    
+    <div class="card">
+        <h2>Test RPC Endpoint</h2>
+        <p>This page tests the create_post_report function using direct fetch API calls.</p>
+        
+        <form id="test-form">
+            <div>
+                <label for="post-id">Post ID (UUID):</label>
+                <input type="text" id="post-id" placeholder="e.g., 123e4567-e89b-12d3-a456-426614174000" required>
+            </div>
+            
+            <div>
+                <label for="reason">Reason:</label>
+                <select id="reason" required>
+                    <option value="">Select a reason</option>
+                    <option value="spam">Spam</option>
+                    <option value="harassment">Harassment or bullying</option>
+                    <option value="inappropriate">Inappropriate content</option>
+                    <option value="violence">Violence or harmful content</option>
+                    <option value="fraud">Fraud or scam</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="details">Details (optional):</label>
+                <textarea id="details" placeholder="Additional details about the report"></textarea>
+            </div>
+            
+            <button type="submit">Test Direct API Call</button>
+        </form>
+    </div>
+    
+    <div class="card">
+        <h2>Result</h2>
+        <pre id="result">Results will appear here...</pre>
+    </div>
+    
+    <script>
+        // Replace with your Supabase URL and anon key
+        const SUPABASE_URL = 'https://llymgjymayusaengcdvy.supabase.co';
+        const SUPABASE_KEY = 'your-anon-key'; // Replace with your anon key
+        
+        document.getElementById('test-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = 'Sending request...';
+            
+            const postId = document.getElementById('post-id').value;
+            const reason = document.getElementById('reason').value;
+            const details = document.getElementById('details').value || null;
+            
+            try {
+                // Method 1: Try with a JSON body (positional parameters as an array)
+                const response1 = await fetch(`${SUPABASE_URL}/rest/v1/rpc/create_post_report`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    },
+                    body: JSON.stringify([postId, reason, details])
+                });
+                
+                if (response1.ok) {
+                    const data = await response1.json();
+                    resultEl.textContent = 'Success (Method 1 - Array):\n\n' + JSON.stringify(data, null, 2);
+                    return;
+                }
+                
+                // Method 2: Try with named parameters
+                const response2 = await fetch(`${SUPABASE_URL}/rest/v1/rpc/create_post_report`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    },
+                    body: JSON.stringify({
+                        "in_post_id": postId,
+                        "in_report_reason": reason,
+                        "in_report_details": details
+                    })
+                });
+                
+                if (response2.ok) {
+                    const data = await response2.json();
+                    resultEl.textContent = 'Success (Method 2 - Named Params):\n\n' + JSON.stringify(data, null, 2);
+                    return;
+                }
+                
+                // Method 3: Try with exact function signature matching
+                const response3 = await fetch(`${SUPABASE_URL}/rest/v1/rpc/create_post_report`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Prefer': 'params=single-object'
+                    },
+                    body: JSON.stringify({
+                        "in_post_id": postId,
+                        "in_report_reason": reason,
+                        "in_report_details": details
+                    })
+                });
+                
+                const errorData = await response3.json();
+                resultEl.textContent = 'Error:\n\n' + JSON.stringify(errorData, null, 2);
+                
+            } catch (error) {
+                resultEl.textContent = 'Error:\n\n' + JSON.stringify(error, null, 2);
+            }
+        });
+    </script>
+</body>
+</html> 

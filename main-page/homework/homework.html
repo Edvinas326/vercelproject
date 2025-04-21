@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework - EduTrack</title>
+    <!-- Add favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom styles -->
+    <link rel="stylesheet" type="text/css" href="../main-styles.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body>
+    <div class="min-h-screen bg-gray-100">
+        <!-- Navigation Bar -->
+        <nav class="bg-white border-b border-gray-200 fixed w-full top-0 z-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Left Side - Logo and Brand -->
+                    <div class="flex items-center space-x-4">
+                        <a href="../main-page.html" class="flex items-center space-x-2">
+                            <img src="../assets/favicon.ico" alt="Logo" class="w-8 h-8">
+                            <span class="text-xl font-bold text-blue-600">EduTrack</span>
+                        </a>
+                    </div>
+
+                    <!-- Center - Navigation Links -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="../main-page.html" class="nav-link text-gray-600 hover:text-blue-500 font-medium">Home</a>
+                        <a href="#" class="nav-link text-gray-600 hover:text-blue-500 font-medium">Courses</a>
+                        <a href="#" class="nav-link text-gray-600 hover:text-blue-500 font-medium">Assignments</a>
+                        <a href="#" class="nav-link text-gray-600 hover:text-blue-500 font-medium">Resources</a>
+                    </div>
+
+                    <!-- Right Side - User Menu and Settings -->
+                    <div class="flex items-center space-x-6">
+                        <!-- Dark Mode Toggle -->
+                        <button id="darkModeToggle" class="text-gray-600 hover:text-blue-500">
+                            <svg class="w-6 h-6 hidden dark:inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <svg class="w-6 h-6 inline-block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Add padding to account for fixed navbar -->
+        <div class="pt-28">
+            <div class="container mx-auto px-4">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Homework</h1>
+                    <p class="text-gray-600">View and manage your homework assignments</p>
+                </div>
+
+                <!-- Homework List -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <!-- Homework List Header -->
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-semibold text-gray-900">Current Assignments</h2>
+                            <div class="flex space-x-4">
+                                <button id="filterButton" class="flex items-center space-x-2 text-gray-600 hover:text-blue-500">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                    </svg>
+                                    <span>Filter</span>
+                                </button>
+                                <button id="sortButton" class="flex items-center space-x-2 text-gray-600 hover:text-blue-500">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+                                    </svg>
+                                    <span>Sort</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Homework List Content -->
+                    <div id="homeworkList" class="divide-y divide-gray-200">
+                        <!-- Homework items will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="homework.js" type="module"></script>
+</body>
+</html> 

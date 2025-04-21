@@ -1,0 +1,584 @@
+/* Add new font import at the top */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: white;
+    display: flex;
+    height: 100vh;
+    margin: 0;
+}
+
+.video-container {
+    flex: 1;
+    position: relative;
+}
+
+.background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.login-container {
+    max-width: 500px !important;
+    width: 100% !important;
+    padding: 4rem !important;
+    background: white !important;
+    border-radius: 10px !important; 
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1), 
+                inset 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    display: flex !important; 
+    flex-direction: column !important; 
+    align-items: center !important; 
+    justify-content: center !important;
+    position: absolute !important;
+    right: 40px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 1 !important;
+    margin: 20px !important;
+}
+
+/* Form element styles */
+.login-container form {
+    width: 100% !important;
+}
+
+.login-container .mb-4 {
+    width: 100% !important;
+    text-align: left !important;
+}
+
+.login-container input,
+.login-container button,
+.login-container a {
+    width: 100% !important;
+    display: block !important;
+}
+
+.login-container a {
+    text-align: center !important;
+    margin-top: 1rem !important;
+}
+
+.login-container #login-message {
+    width: 100% !important;
+    text-align: center !important;
+}
+
+.login-container .mt-12 {
+    width: 100% !important;
+}
+
+/* Add these at the very end of your CSS file */
+.login-container label {
+    text-align: left !important;
+}
+
+.login-container input {
+    text-align: left !important;
+}
+
+/* Input and button styles */
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+input:focus {
+    border-color: #4facfe;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4facfe;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #00f2fe;
+}
+
+.login-page {
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+
+/* Split layout container */
+.split-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Left side - Login */
+.login-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+
+.login-wrapper {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 450px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.login-header h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.login-header p {
+    color: #333333;
+}
+
+/* Right side - Branding */
+.brand-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    padding: 2rem;
+    color: white;
+}
+
+.brand-content {
+    text-align: center;
+    max-width: 500px;
+}
+
+.brand-icon {
+    font-size: 5rem;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+}
+
+.brand-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.brand-content p {
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+}
+
+.feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.1rem;
+}
+
+.feature-item i {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+}
+
+/* Clerk container styling */
+#sign-in {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+#sign-in > div {
+    width: 100% !important;
+    margin: 0 auto !important;
+}
+
+#sign-in :is(form, div[role="main"]) {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Updated Responsive Design */
+@media screen and (max-width: 1024px) {
+    body {
+        flex-direction: column;
+        min-height: 100vh;
+        justify-content: center;
+    }
+
+    .video-container {
+        display: none;
+    }
+
+    .login-container {
+        position: relative !important;
+        right: auto !important;
+        top: auto !important;
+        transform: none !important;
+        width: 90% !important;
+        max-width: 500px !important;
+        margin: 2rem auto !important;
+        padding: 2rem !important;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .login-container {
+        width: 95% !important;
+        padding: 1.5rem !important;
+        margin: 1rem auto !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .login-container h2 {
+        font-size: 1.75rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .login-container input,
+    .login-container button {
+        font-size: 1rem !important;
+        padding: 0.75rem 1rem !important;
+        width: 100% !important;
+    }
+
+    .login-container .mb-4 {
+        margin-bottom: 1rem !important;
+    }
+
+    /* Fix form alignment */
+    form {
+        width: 100% !important;
+    }
+
+    /* Center align text */
+    .text-center {
+        text-align: center !important;
+    }
+}
+
+/* Error message styling */
+.error-message {
+    color: red;
+    text-align: center;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.form-tabs {
+    display: flex;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 1rem;
+    background: none;
+    border: none;
+    color: #333333;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    font-weight: 600;
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.form-group i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666666;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    color: #333333;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: #333333;
+}
+
+.form-options label {
+    color: #333333;
+}
+
+.forgot-password {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    color: var(--dark-text);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    letter-spacing: 0.5px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+}
+
+.social-login {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.social-login p {
+    color: #333333;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.social-login p::before,
+.social-login p::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background-color: #e0e0e0;
+}
+
+.social-login p::before {
+    left: 0;
+}
+
+.social-login p::after {
+    right: 0;
+}
+
+.social-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-btn {
+    flex: 1;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: transform 0.3s ease;
+    font-weight: 500;
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+}
+
+.social-btn.google {
+    background-color: #ffffff;
+    color: #333;
+}
+
+.social-btn.facebook {
+    background-color: #1877f2;
+    color: white;
+}
+
+/* Add these styles to handle Clerk's components */
+#clerk-auth {
+    width: 100%;
+    min-height: 400px;
+    margin: 2rem 0;
+}
+
+/* Add these styles for the loading indicator */
+.loading-indicator {
+    text-align: center;
+    padding: 2rem;
+    color: #333;
+}
+
+#clerk-sign-in {
+    width: 100%;
+    min-height: 400px;
+    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Style Clerk's container to fit within our box */
+#sign-in > div {
+    width: 100% !important;
+    margin: 0 auto !important;
+}
+
+/* Adjust Clerk's internal elements */
+#sign-in :is(form, div[role="main"]) {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.flex-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    height: auto;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.signup-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4facfe;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.signup-button:hover {
+    background-color: #00f2fe;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Add or update the styles for the signup section */
+#signup-section {
+    max-width: 400px;
+    padding: 2rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+/* Add these text size adjustments */
+.login-container h2 {
+    font-size: 2.5rem !important; /* Larger welcome text */
+    margin-bottom: 2rem !important;
+}
+
+.login-container label {
+    font-size: 1.1rem !important; /* Larger label text */
+    margin-bottom: 0.5rem !important;
+}
+
+.login-container input {
+    font-size: 1.1rem !important; /* Larger input text */
+    padding: 0.75rem 1rem !important; /* Larger input padding */
+}
+
+.login-container button {
+    font-size: 1.2rem !important; /* Larger button text */
+    padding: 0.75rem 1.5rem !important; /* Larger button padding */
+}
+
+.login-container a {
+    font-size: 1rem !important; /* Larger link text */
+}
+
+.login-container .text-gray-600 {
+    font-size: 1.1rem !important; /* Larger "Don't have an account?" text */
+}

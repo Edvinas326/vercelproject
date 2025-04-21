@@ -1,0 +1,109 @@
+/* Modal styles */
+.modal-transition {
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Button states */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Input focus states */
+.course-input input:focus,
+.course-input select:focus {
+    outline: none;
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.3);
+}
+
+/* Hover effects */
+.course-input input:hover,
+.course-input select:hover {
+    border-color: #6B7280;
+}
+
+/* Dark mode styles - only applied when dark class is present */
+.dark #gpaCalculatorModal .bg-white {
+    background-color: #1a1a1a;
+}
+
+.dark #gpaCalculatorModal input,
+.dark #gpaCalculatorModal select {
+    background-color: #374151;
+    border-color: #4B5563;
+    color: #F9FAFB;
+}
+
+.dark #gpaCalculatorModal input::placeholder {
+    color: #9CA3AF;
+}
+
+.dark #gpaCalculatorModal .text-gray-900,
+.dark #gpaCalculatorModal .text-gray-800,
+.dark #gpaCalculatorModal .text-gray-700 {
+    color: #F9FAFB;
+}
+
+.dark #gpaCalculatorModal .bg-gray-50 {
+    background-color: #2d2d2d;
+}
+
+/* Dark mode hover effects */
+.dark #gpaCalculatorModal .hover\:text-gray-500:hover {
+    color: #F9FAFB;
+}
+
+.dark #gpaCalculatorModal .hover\:bg-gray-100:hover {
+    background-color: #374151;
+}
+
+/* Add styles for the new GPA breakdown display */
+.dark #gpaCalculatorModal .text-gray-600 {
+    color: #D1D5DB;
+}
+
+.dark #gpaCalculatorModal .border-t {
+    border-color: #374151;
+}
+
+/* Add transition for better user experience */
+.course-input input,
+.course-input select,
+button {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Responsive GPA Calculator */
+@media screen and (max-width: 768px) {
+    #gpaCalculatorModal .bg-white {
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .course-input {
+        flex-direction: column;
+    }
+
+    .course-input > * {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #gpaCalculatorModal .bg-white {
+        width: 95%;
+        padding: 1rem;
+    }
+
+    #gpaCalculatorModal h3 {
+        font-size: 1.25rem;
+    }
+
+    .course-input input,
+    .course-input select {
+        font-size: 0.875rem;
+    }
+} 

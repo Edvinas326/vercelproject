@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="login-styles.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase
+    </script>
+    <script src="loginpage.js"></script>
+    <style>
+        body {
+            background: linear-gradient(to right, #ffffff, #ffffff);
+            display: flex; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .video-container {
+            flex: 1;
+            position: relative;
+        }
+        .background-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        .login-container {
+            max-width: 400px;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            margin: 20px;
+        }
+        .login-container label {
+            text-align: left; /* Ensure labels are left-aligned */
+        }
+        .login-container input {
+            text-align: left; /* Ensure input fields are left-aligned */
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video class="background-video" autoplay loop muted>
+            <source src="login page assets/video/backgroundvideo.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="login-container" id="login-container">
+        <h2 class="text-3xl font-bold text-center mb-16">Welcome Back!</h2>
+        <form id="login-form" class="w-full">
+            <div class="mb-4">
+                <label for="login-email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="login-email" name="email" required class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="login-password" name="password" required class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500">
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition duration-200">Login</button>
+            <p id="login-message" class="mt-4 text-red-500"></p>
+            <div class="text-center mt-4">
+                <a href="../forgot password/forgot-password.html" class="text-blue-500 hover:underline">Forgot Password?</a>
+            </div>
+        </form>
+        <div class="mt-12 text-center">
+            <span class="text-gray-600 font-semibold">Don't have an account? </span>
+            <button id="show-signup" onclick="window.location.href='../signup page/signup.html'" class="signup-button w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition duration-200 mt-4">Sign Up</button>
+        </div>
+    </div>
+</body>
+</html>

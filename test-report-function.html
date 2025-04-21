@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Report Function</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .card {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        pre {
+            background: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Report Post Function</h1>
+    
+    <div class="card">
+        <h2>Function Information</h2>
+        <p>This page tests if the <code>report_post</code> function is properly registered with Supabase RPC.</p>
+    </div>
+
+    <div class="card">
+        <h2>Test Call</h2>
+        <form id="test-form">
+            <div>
+                <label for="post-id">Post ID (UUID):</label>
+                <input type="text" id="post-id" placeholder="e.g., 123e4567-e89b-12d3-a456-426614174000" required>
+            </div>
+            
+            <div>
+                <label for="reason">Reason:</label>
+                <select id="reason" required>
+                    <option value="">Select a reason</option>
+                    <option value="spam">Spam</option>
+                    <option value="harassment">Harassment or bullying</option>
+                    <option value="inappropriate">Inappropriate content</option>
+                    <option value="violence">Violence or harmful content</option>
+                    <option value="fraud">Fraud or scam</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="details">Details (optional):</label>
+                <textarea id="details" placeholder="Additional details about the report"></textarea>
+            </div>
+            
+            <button type="submit">Test Report Function</button>
+        </form>
+    </div>
+    
+    <div class="card result">
+        <h2>Result</h2>
+        <div id="result-container">
+            <p>Results will appear here after testing...</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2>Available Functions</h2>
+        <p>Click below to check all available RPC functions:</p>
+        <button id="check-functions">Check Available Functions</button>
+        <div id="functions-container" class="result">
+            <p>Function list will appear here...</p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://llymgjymayusaengcdvy.supabase.co';
+        const supabaseKey = 'your-anon-key'; // Replace with your anon key
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        
+        document.getElementById('test-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.innerHTML = '<p>Testing function call...</p>';
+            
+            const postId = document.getElementById('post-id').value;
+            const reason = document.getElementById('reason').value;
+            const details = document.getElementById('details').value || null;
+            
+            try {
+                // First attempt with details, post_id, reason order
+                const { data: data1, error: error1 } = await supabase.rpc('report_post', {
+                    details: details,
+                    post_id: postId,
+                    reason: reason
+                });
+                
+                if (error1) {
+                    throw error1;
+                }
+                
+                resultContainer.innerHTML = `
+                    <p style="color: green;">Success! The function worked.</p>
+                    <pre>${JSON.stringify(data1, null, 2)}</pre>
+                `;
+                
+            } catch (error1) {
+                console.error('First attempt failed:', error1);
+                
+                try {
+                    // Second attempt with new function name
+                    const { data: data2, error: error2 } = await supabase.rpc('submit_post_report', {
+                        post_id: postId,
+                        reason: reason,
+                        details: details
+                    });
+                    
+                    if (error2) {
+                        throw error2;
+                    }
+                    
+                    resultContainer.innerHTML = `
+                        <p style="color: green;">Success with submit_post_report function! The function worked.</p>
+                        <pre>${JSON.stringify(data2, null, 2)}</pre>
+                    `;
+                    
+                } catch (error2) {
+                    console.error('Second attempt failed:', error2);
+                    
+                    resultContainer.innerHTML = `
+                        <p style="color: red;">Both attempts failed.</p>
+                        <p>First attempt error:</p>
+                        <pre>${JSON.stringify(error1, null, 2)}</pre>
+                        <p>Second attempt error:</p>
+                        <pre>${JSON.stringify(error2, null, 2)}</pre>
+                        <p>Make sure the function is properly registered and you've refreshed the schema cache.</p>
+                    `;
+                }
+            }
+        });
+        
+        document.getElementById('check-functions').addEventListener('click', async function() {
+            const functionsContainer = document.getElementById('functions-container');
+            functionsContainer.innerHTML = '<p>Fetching available functions...</p>';
+            
+            try {
+                // Query the information schema to get available functions
+                const { data: reportPostData, error: reportPostError } = await supabase
+                    .from('pg_catalog.pg_proc')
+                    .select('proname, prosrc')
+                    .eq('proname', 'report_post');
+                
+                const { data: submitReportData, error: submitReportError } = await supabase
+                    .from('pg_catalog.pg_proc')
+                    .select('proname, prosrc')
+                    .eq('proname', 'submit_post_report');
+                
+                if (reportPostError || submitReportError) {
+                    throw reportPostError || submitReportError;
+                }
+                
+                const allFunctions = [
+                    ...(reportPostData || []),
+                    ...(submitReportData || [])
+                ];
+                
+                if (allFunctions.length > 0) {
+                    functionsContainer.innerHTML = `
+                        <p style="color: green;">Found ${allFunctions.length} function(s) for report functionality:</p>
+                        <pre>${JSON.stringify(allFunctions, null, 2)}</pre>
+                    `;
+                } else {
+                    functionsContainer.innerHTML = `
+                        <p style="color: orange;">No reporting functions found.</p>
+                        <p>The functions may not be properly registered.</p>
+                    `;
+                }
+            } catch (error) {
+                functionsContainer.innerHTML = `
+                    <p style="color: red;">Error checking functions:</p>
+                    <pre>${JSON.stringify(error, null, 2)}</pre>
+                    <p>You might need to use the Supabase dashboard SQL editor to check available functions.</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,208 @@
+/* Calendar container */
+.calendar {
+    background-color: white;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.dark .calendar {
+    background-color: #1a1a1a;
+}
+
+/* Calendar grid */
+.calendar .grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+/* Calendar days */
+#calendar-days div {
+    aspect-ratio: 1;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+/* Day cells hover */
+#calendar-days div:not(.text-gray-400):hover {
+    background-color: #EBF5FF;
+    transform: scale(1.05);
+}
+
+/* Previous/next month days */
+.calendar .text-gray-400 {
+    background-color: #fafafa;
+    cursor: default;
+}
+
+/* Today's date */
+.calendar .today {
+    background-color: #3B82F6;
+    color: white;
+    font-weight: 600;
+}
+
+/* Days with events */
+.calendar .has-event {
+    background-color: #EBF5FF;
+    border: 2px solid #3B82F6;
+}
+
+.dark .calendar .has-event {
+    background-color: rgba(59, 130, 246, 0.1);
+    border: 2px solid #3B82F6;
+}
+
+/* Event type colors - update for both light and dark modes */
+.has-event.event-test {
+    background-color: #FEF2F2;  /* Lighter red for tests */
+    border-color: #FCA5A5;
+}
+
+.dark .has-event.event-test {
+    background-color: rgba(252, 165, 165, 0.1);
+    border-color: #FCA5A5;
+}
+
+.has-event.event-homework {
+    background-color: #F0F9FF;  /* Lighter blue for homework */
+    border-color: #93C5FD;
+}
+
+.dark .has-event.event-homework {
+    background-color: rgba(147, 197, 253, 0.1);
+    border-color: #93C5FD;
+}
+
+.has-event.event-project {
+    background-color: #F0FDF4;  /* Lighter green for projects */
+    border-color: #86EFAC;
+}
+
+.dark .has-event.event-project {
+    background-color: rgba(134, 239, 172, 0.1);
+    border-color: #86EFAC;
+}
+
+.has-event.event-meeting {
+    background-color: #FEFCE8;  /* Lighter yellow for meetings */
+    border-color: #FDE68A;
+}
+
+.dark .has-event.event-meeting {
+    background-color: rgba(253, 230, 138, 0.1);
+    border-color: #FDE68A;
+}
+
+/* Remove the emoji icons */
+.event-homework::before,
+.event-test::before,
+.event-project::before,
+.event-meeting::before,
+.event-other::before {
+    content: none;
+}
+
+/* Calendar day number */
+#calendar-days div span {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Events list */
+#events-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.event-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    border: 1px solid #E5E7EB;
+    transition: transform 0.15s ease;
+}
+
+.dark .event-item {
+    background-color: #1e293b;
+    border-color: #374151;
+}
+
+.event-item:hover {
+    transform: translateX(4px);
+}
+
+/* Modal styles */
+#eventModal {
+    backdrop-filter: blur(4px);
+}
+
+#eventModal .bg-white {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.dark #eventModal .bg-white {
+    background-color: #1a1a1a;
+}
+
+/* Add dark mode styles for text colors */
+.dark .text-gray-600 {
+    color: #D1D5DB;
+}
+
+.dark .text-gray-700 {
+    color: #E5E7EB;
+}
+
+.dark .text-gray-800 {
+    color: #F3F4F6;
+}
+
+.dark .text-gray-900 {
+    color: #F9FAFB;
+}
+
+/* Dark mode background for hover states */
+.dark #calendar-days div:not(.text-gray-400):hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Dark mode for today's date */
+.dark .calendar .today {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #60A5FA;
+    border-color: #3B82F6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    #calendar-days div {
+        padding: 0.25rem;
+        font-size: 0.875rem;
+    }
+    
+    .event-item {
+        padding: 0.5rem;
+    }
+}
+
+/* Remove the fixed size constraints */
+#calendar-days > div {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
