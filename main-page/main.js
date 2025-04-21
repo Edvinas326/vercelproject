@@ -115,21 +115,47 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Dark mode toggle functionality
 function initializeDarkMode() {
     const darkModeToggle = document.getElementById('darkModeToggle');
+    if (!darkModeToggle) return;
     
     // Check for saved dark mode preference
-    if (localStorage.getItem('darkMode') === 'enabled' || 
-        (localStorage.getItem('darkMode') === null && 
-         window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    const isDarkMode = localStorage.getItem('darkMode') === 'enabled' || 
+                      (localStorage.getItem('darkMode') === null && 
+                       window.matchMedia('(prefers-color-scheme: dark)').matches);
+    
+    if (isDarkMode) {
         document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
     }
+    
+    // Set initial icon visibility
+    updateDarkModeIcons(darkModeToggle, isDarkMode);
 
     // Toggle dark mode
     darkModeToggle.addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
-        localStorage.setItem('darkMode', 
-            document.documentElement.classList.contains('dark') ? 'enabled' : 'disabled'
-        );
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+        
+        // Force icon visibility update
+        updateDarkModeIcons(darkModeToggle, isDarkMode);
     });
+}
+
+// Helper function to update dark mode icons
+function updateDarkModeIcons(button, isDarkMode) {
+    if (!button) return;
+    
+    const sunIcon = button.querySelector('svg:first-of-type');
+    const moonIcon = button.querySelector('svg:last-of-type');
+    
+    if (isDarkMode) {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+    } else {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+    }
 }
 
 // Add this function to update profile photos across the app

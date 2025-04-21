@@ -1,0 +1,1020 @@
+// Import Supabase client
+import supabase from '../../supabase-config.js';
+
+// DOM Elements
+const homeworkList = document.getElementById('homeworkList');
+const filterButton = document.getElementById('filterButton');
+const sortButton = document.getElementById('sortButton');
+const darkModeToggle = document.getElementById('darkModeToggle');
+const addHomeworkBtn = document.getElementById('addHomeworkBtn');
+const noAssignmentsEl = document.getElementById('noAssignments');
+
+// Status Counter Elements
+const pendingCount = document.getElementById('pendingCount');
+const progressCount = document.getElementById('progressCount');
+const completedCount = document.getElementById('completedCount');
+const overdueCount = document.getElementById('overdueCount');
+
+// Filter and sort variables
+let currentFilter = 'all'; // all, pending, in-progress, completed, overdue
+let currentSort = 'due-date-asc'; // due-date-asc, due-date-desc, recently-added, status
+
+// Filter options
+const filterOptions = [
+    { id: 'all', label: 'All Assignments' },
+    { id: 'pending', label: 'Pending' },
+    { id: 'in-progress', label: 'In Progress' },
+    { id: 'completed', label: 'Completed' },
+    { id: 'overdue', label: 'Overdue' }
+];
+
+// Sort options
+const sortOptions = [
+    { id: 'due-date-asc', label: 'Due Date (Earliest)' },
+    { id: 'due-date-desc', label: 'Due Date (Latest)' },
+    { id: 'recently-added', label: 'Recently Added' },
+    { id: 'status', label: 'Status' }
+];
+
+// Helper function to update dark mode icons
+function updateDarkModeIcons(button, isDarkMode) {
+    if (!button) return;
+    
+    const sunIcon = button.querySelector('svg:first-of-type');
+    const moonIcon = button.querySelector('svg:last-of-type');
+    
+    if (isDarkMode) {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+    } else {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+    }
+}
+
+// Initialize dark mode
+const isDarkMode = localStorage.getItem('darkMode') === 'enabled' ||
+    (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+if (isDarkMode) {
+    document.documentElement.classList.add('dark');
+} else {
+    document.documentElement.classList.remove('dark');
+}
+
+// Set initial icon visibility
+if (darkModeToggle) {
+    updateDarkModeIcons(darkModeToggle, isDarkMode);
+    
+    // Dark Mode Toggle
+    darkModeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+        
+        // Force icon visibility update
+        updateDarkModeIcons(darkModeToggle, isDarkMode);
+    });
+}
+
+// Homework Status Colors
+const statusColors = {
+    'pending': {
+        bg: 'bg-yellow-100 dark:bg-yellow-900/30',
+        text: 'text-yellow-800 dark:text-yellow-300',
+        icon: `<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>`
+    },
+    'in-progress': {
+        bg: 'bg-primary-100 dark:bg-primary-900/30',
+        text: 'text-primary-800 dark:text-primary-300',
+        icon: `<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+               </svg>`
+    },
+    'completed': {
+        bg: 'bg-green-100 dark:bg-green-900/30',
+        text: 'text-green-800 dark:text-green-300',
+        icon: `<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+               </svg>`
+    },
+    'overdue': {
+        bg: 'bg-red-100 dark:bg-red-900/30',
+        text: 'text-red-800 dark:text-red-300',
+        icon: `<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+               </svg>`
+    }
+};
+
+// Create Homework Item Element
+function createHomeworkItem(homework) {
+    const dueDate = new Date(homework.due_date);
+    const now = new Date();
+    const isOverdue = dueDate < now && homework.status !== 'completed';
+    const status = isOverdue ? 'overdue' : (homework.status || 'pending');
+    
+    // Format the due date nicely
+    const dateOptions = { weekday: 'short', month: 'short', day: 'numeric' };
+    const formattedDate = dueDate.toLocaleDateString(undefined, dateOptions);
+    
+    // Calculate days remaining
+    const daysRemaining = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+    let daysText = '';
+    
+    if (status === 'completed') {
+        daysText = 'Completed';
+    } else if (isOverdue) {
+        daysText = `${Math.abs(daysRemaining)} day${Math.abs(daysRemaining) !== 1 ? 's' : ''} overdue`;
+    } else if (daysRemaining === 0) {
+        daysText = 'Due today';
+    } else {
+        daysText = `${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} left`;
+    }
+    
+    return `
+        <div class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${homework.title}</h3>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium flex items-center ${statusColors[status].bg} ${statusColors[status].text}">
+                            ${statusColors[status].icon}
+                            ${status.charAt(0).toUpperCase() + status.slice(1)}
+                        </span>
+                    </div>
+                    <p class="mt-2 text-gray-600 dark:text-gray-300">${homework.description || 'No description provided.'}</p>
+                    <div class="mt-4 flex flex-wrap items-center gap-4 text-sm">
+                        <div class="flex items-center text-gray-500 dark:text-gray-400">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            ${formattedDate}
+                        </div>
+                        <div class="flex items-center ${isOverdue ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            ${daysText}
+                        </div>
+                        <div class="flex items-center text-gray-500 dark:text-gray-400">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            N/A hours
+                        </div>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="p-2 text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" onclick="updateStatus('${homework.id}')">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                    </button>
+                    <button class="p-2 text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" onclick="editHomework('${homework.id}')">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                    </button>
+                    <button class="p-2 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" onclick="deleteHomework('${homework.id}')">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Fetch and Display Homework
+async function fetchHomework() {
+    try {
+        // Get current user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
+            console.error('Authentication error:', userError);
+            window.location.href = '../login page/login.html';
+            return;
+        }
+
+        // Set up real-time subscription for homework
+        const homeworkChannel = supabase
+            .channel('homework_changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'homework_assignments',
+                    filter: `student_id=eq.${user.id}`
+                },
+                (payload) => {
+                    console.log('Homework changed:', payload);
+                    loadHomework(user.id);
+                }
+            )
+            .subscribe((status) => {
+                console.log('Homework subscription status:', status);
+            });
+
+        // Initial load
+        await loadHomework(user.id);
+    } catch (error) {
+        console.error('Error in fetchHomework:', error);
+    }
+}
+
+// Update status counters
+function updateStatusCounters(homeworkData) {
+    let pending = 0;
+    let inProgress = 0;
+    let completed = 0;
+    let overdue = 0;
+    
+    homeworkData.forEach(hw => {
+        const dueDate = new Date(hw.due_date);
+        const now = new Date();
+        const isOverdue = dueDate < now && hw.status !== 'completed';
+        
+        if (isOverdue) {
+            overdue++;
+        } else if (hw.status === 'completed') {
+            completed++;
+        } else if (hw.status === 'in-progress') {
+            inProgress++;
+        } else {
+            pending++;
+        }
+    });
+    
+    pendingCount.textContent = pending;
+    progressCount.textContent = inProgress;
+    completedCount.textContent = completed;
+    overdueCount.textContent = overdue;
+}
+
+// Load homework data
+async function loadHomework(userId) {
+    try {
+        // Show loading state
+        homeworkList.innerHTML = `
+            <div class="p-6 animate-pulse">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-4">
+                            <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                            <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
+                        </div>
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mt-2"></div>
+                        <div class="mt-4 flex items-center space-x-4">
+                            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-4">
+                        <div class="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                        <div class="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const { data: homeworkData, error } = await supabase
+            .from('homework_assignments')
+            .select(`
+                id,
+                title,
+                description,
+                due_date,
+                class_id,
+                created_at,
+                updated_at,
+                homework_submissions(status)
+            `)
+            .order('due_date', { ascending: true });
+
+        if (error) {
+            throw error;
+        }
+
+        homeworkList.innerHTML = '';
+        
+        if (homeworkData.length === 0) {
+            homeworkList.innerHTML = '<div class="p-8 text-center text-gray-500 dark:text-gray-400">You have no homework assignments.</div>';
+            noAssignmentsEl.classList.remove('hidden');
+            updateStatusCounters([]);
+            return;
+        }
+        
+        noAssignmentsEl.classList.add('hidden');
+
+        // Process homework data
+        homeworkData.forEach((homework) => {
+            const submission = homework.homework_submissions && homework.homework_submissions[0];
+            homework.status = submission ? submission.status : 'pending';
+            
+            homeworkList.innerHTML += createHomeworkItem(homework);
+        });
+        
+        // Update counters
+        updateStatusCounters(homeworkData);
+        
+    } catch (error) {
+        console.error('Error loading homework:', error);
+        homeworkList.innerHTML = `
+            <div class="p-8 text-center">
+                <svg class="w-16 h-16 mx-auto text-red-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <p class="text-red-500 dark:text-red-400 font-medium mb-2">Error loading homework assignments</p>
+                <p class="text-gray-500 dark:text-gray-400">Please refresh the page to try again</p>
+            </div>
+        `;
+    }
+}
+
+// Delete homework function for button click
+window.deleteHomework = async (homeworkId) => {
+    if (!confirm('Are you sure you want to delete this homework?')) {
+        return;
+    }
+    
+    try {
+        const { error } = await supabase
+            .from('homework_assignments')
+            .delete()
+            .eq('id', homeworkId);
+            
+        if (error) throw error;
+        
+        // No need to refresh manually due to real-time subscription
+    } catch (error) {
+        console.error('Error deleting homework:', error);
+        alert('Failed to delete homework: ' + error.message);
+    }
+};
+
+// Update status function
+window.updateStatus = async (homeworkId) => {
+    try {
+        // First get the current status
+        const { data, error: fetchError } = await supabase
+            .from('homework_assignments')
+            .select(`
+                id,
+                homework_submissions(status)
+            `)
+            .eq('id', homeworkId)
+            .single();
+            
+        if (fetchError) throw fetchError;
+        
+        // Determine current status and next status
+        const currentStatus = data.homework_submissions && data.homework_submissions[0] ? 
+            data.homework_submissions[0].status : 'pending';
+            
+        let nextStatus;
+        if (currentStatus === 'pending') nextStatus = 'in-progress';
+        else if (currentStatus === 'in-progress') nextStatus = 'completed';
+        else if (currentStatus === 'completed') nextStatus = 'pending';
+        else if (currentStatus === 'overdue') nextStatus = 'in-progress';
+        
+        // Update the status
+        const { error: updateError } = await supabase
+            .from('homework_submissions')
+            .upsert({
+                homework_id: homeworkId,
+                status: nextStatus,
+                updated_at: new Date().toISOString()
+            });
+            
+        if (updateError) throw updateError;
+        
+        // Refresh the UI via subscription
+    } catch (error) {
+        console.error('Error updating status:', error);
+        alert('Failed to update status: ' + error.message);
+    }
+};
+
+// Edit homework function for button click
+window.editHomework = (homeworkId) => {
+    showEditHomeworkModal(homeworkId);
+};
+
+// Create and show the edit homework modal
+async function showEditHomeworkModal(homeworkId) {
+    try {
+        // First get the homework details
+        const { data: homework, error } = await supabase
+            .from('homework_assignments')
+            .select(`
+                id,
+                title,
+                description,
+                due_date,
+                class_id,
+                homework_submissions(status)
+            `)
+            .eq('id', homeworkId)
+            .single();
+            
+        if (error) throw error;
+        
+        // Get submission status
+        const submission = homework.homework_submissions && homework.homework_submissions[0];
+        const status = submission ? submission.status : 'pending';
+        
+        // Create modal container
+        const modalContainer = document.createElement('div');
+        modalContainer.id = 'editHomeworkModal';
+        modalContainer.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]';
+        
+        // Create modal content
+        const modalContent = document.createElement('div');
+        modalContent.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md p-6 relative';
+        
+        // Format date for input
+        const formattedDate = homework.due_date.split('T')[0];
+        
+        // Create modal HTML content
+        modalContent.innerHTML = `
+            <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Edit Assignment</h2>
+            <form id="editHomeworkForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                    <input type="text" id="edit-homework-title" required value="${homework.title}"
+                        class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                    <textarea id="edit-homework-description" rows="3" 
+                        class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white">${homework.description || ''}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
+                    <input type="date" id="edit-homework-due-date" required value="${formattedDate}"
+                        class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Subject/Class</label>
+                    <select id="edit-homework-class" required
+                        class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white">
+                        <option value="math" ${homework.class_id === 'math' ? 'selected' : ''}>Mathematics</option>
+                        <option value="science" ${homework.class_id === 'science' ? 'selected' : ''}>Science</option>
+                        <option value="english" ${homework.class_id === 'english' ? 'selected' : ''}>English</option>
+                        <option value="history" ${homework.class_id === 'history' ? 'selected' : ''}>History</option>
+                        <option value="cs" ${homework.class_id === 'cs' ? 'selected' : ''}>Computer Science</option>
+                        <option value="art" ${homework.class_id === 'art' ? 'selected' : ''}>Art</option>
+                        <option value="other" ${homework.class_id === 'other' ? 'selected' : ''}>Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                    <select id="edit-homework-status" required
+                        class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white">
+                        <option value="pending" ${status === 'pending' ? 'selected' : ''}>Pending</option>
+                        <option value="in-progress" ${status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                        <option value="completed" ${status === 'completed' ? 'selected' : ''}>Completed</option>
+                    </select>
+                </div>
+
+                <div class="flex space-x-4 pt-4">
+                    <button type="button" id="cancelEditBtn"
+                        class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="flex-1 px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        `;
+        
+        // Append modal to container
+        modalContainer.appendChild(modalContent);
+        
+        // Append modal to body
+        document.body.appendChild(modalContainer);
+        
+        // Add event listeners
+        const cancelBtn = document.getElementById('cancelEditBtn');
+        const editForm = document.getElementById('editHomeworkForm');
+        
+        // Cancel button
+        cancelBtn.addEventListener('click', () => {
+            document.body.removeChild(modalContainer);
+        });
+        
+        // Form submission
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('edit-homework-title').value;
+            const description = document.getElementById('edit-homework-description').value;
+            const dueDate = document.getElementById('edit-homework-due-date').value;
+            const classId = document.getElementById('edit-homework-class').value;
+            const status = document.getElementById('edit-homework-status').value;
+            
+            try {
+                // Update homework assignment
+                const { error: updateError } = await supabase
+                    .from('homework_assignments')
+                    .update({
+                        title,
+                        description,
+                        due_date: dueDate,
+                        class_id: classId,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', homeworkId);
+                    
+                if (updateError) throw updateError;
+                
+                // Update submission status if it exists
+                if (homework.homework_submissions && homework.homework_submissions.length > 0) {
+                    const { error: statusError } = await supabase
+                        .from('homework_submissions')
+                        .update({
+                            status,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('homework_id', homeworkId);
+                        
+                    if (statusError) throw statusError;
+                } else {
+                    // Create new submission if it doesn't exist
+                    const { error: createStatusError } = await supabase
+                        .from('homework_submissions')
+                        .insert({
+                            homework_id: homeworkId,
+                            status,
+                            updated_at: new Date().toISOString()
+                        });
+                        
+                    if (createStatusError) throw createStatusError;
+                }
+                
+                // No need to manually refresh due to real-time subscription
+                document.body.removeChild(modalContainer);
+                
+                // Show success notification
+                showNotification('Assignment updated successfully', 'success');
+                
+            } catch (error) {
+                console.error('Error updating homework:', error);
+                showNotification('Failed to update assignment: ' + error.message, 'error');
+            }
+        });
+    } catch (error) {
+        console.error('Error loading homework for edit:', error);
+        showNotification('Failed to load assignment details', 'error');
+    }
+}
+
+// Add homework button event listener
+if (addHomeworkBtn) {
+    addHomeworkBtn.addEventListener('click', () => {
+        showAddHomeworkModal();
+    });
+}
+
+// Create and show the add homework modal
+function showAddHomeworkModal() {
+    // Create modal container
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'addHomeworkModal';
+    modalContainer.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]';
+    
+    // Create modal content
+    const modalContent = document.createElement('div');
+    modalContent.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md p-6 relative';
+    
+    // Create modal HTML content
+    modalContent.innerHTML = `
+        <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Add New Assignment</h2>
+        <form id="addHomeworkForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                <input type="text" id="homework-title" required
+                    class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                <textarea id="homework-description" rows="3" 
+                    class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
+                <input type="date" id="homework-due-date" required
+                    class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Subject/Class</label>
+                <select id="homework-class" required
+                    class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:text-white">
+                    <option value="" disabled selected>Select a subject</option>
+                    <option value="math">Mathematics</option>
+                    <option value="science">Science</option>
+                    <option value="english">English</option>
+                    <option value="history">History</option>
+                    <option value="cs">Computer Science</option>
+                    <option value="art">Art</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="flex space-x-4 pt-4">
+                <button type="button" id="cancelHomeworkBtn"
+                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="flex-1 px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors">
+                    Save Assignment
+                </button>
+            </div>
+        </form>
+    `;
+    
+    // Append modal to container
+    modalContainer.appendChild(modalContent);
+    
+    // Append modal to body
+    document.body.appendChild(modalContainer);
+    
+    // Add event listeners
+    const cancelBtn = document.getElementById('cancelHomeworkBtn');
+    const addForm = document.getElementById('addHomeworkForm');
+    
+    // Set min date to today
+    const dueDateInput = document.getElementById('homework-due-date');
+    const today = new Date().toISOString().split('T')[0];
+    dueDateInput.min = today;
+    
+    // Cancel button
+    cancelBtn.addEventListener('click', () => {
+        document.body.removeChild(modalContainer);
+    });
+    
+    // Form submission
+    addForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const title = document.getElementById('homework-title').value;
+        const description = document.getElementById('homework-description').value;
+        const dueDate = document.getElementById('homework-due-date').value;
+        const classId = document.getElementById('homework-class').value;
+        
+        try {
+            // Get current user
+            const { data: { user }, error: userError } = await supabase.auth.getUser();
+            
+            if (userError) throw userError;
+            
+            // Create new homework assignment
+            const { data, error } = await supabase
+                .from('homework_assignments')
+                .insert([
+                    {
+                        title,
+                        description,
+                        due_date: dueDate,
+                        class_id: classId,
+                        student_id: user.id
+                    }
+                ])
+                .select();
+                
+            if (error) throw error;
+            
+            // No need to manually refresh due to real-time subscription
+            document.body.removeChild(modalContainer);
+            
+            // Show success notification
+            showNotification('Assignment added successfully', 'success');
+            
+        } catch (error) {
+            console.error('Error adding homework:', error);
+            showNotification('Failed to add assignment: ' + error.message, 'error');
+        }
+    });
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    
+    // Set classes based on type
+    let bgColor, textColor;
+    if (type === 'success') {
+        bgColor = 'bg-green-100 dark:bg-green-900/30';
+        textColor = 'text-green-800 dark:text-green-300';
+    } else if (type === 'error') {
+        bgColor = 'bg-red-100 dark:bg-red-900/30';
+        textColor = 'text-red-800 dark:text-red-300';
+    } else {
+        bgColor = 'bg-blue-100 dark:bg-blue-900/30';
+        textColor = 'text-blue-800 dark:text-blue-300';
+    }
+    
+    notification.className = `fixed top-4 right-4 ${bgColor} ${textColor} px-4 py-3 rounded-lg shadow-md z-[2000] flex items-center`;
+    
+    // Icon based on type
+    let icon;
+    if (type === 'success') {
+        icon = `<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+               </svg>`;
+    } else if (type === 'error') {
+        icon = `<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+               </svg>`;
+    } else {
+        icon = `<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+               </svg>`;
+    }
+    
+    notification.innerHTML = `
+        ${icon}
+        <span>${message}</span>
+    `;
+    
+    // Add to body
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        if (document.body.contains(notification)) {
+            document.body.removeChild(notification);
+        }
+    }, 3000);
+}
+
+// Sort functionality
+if (sortButton) {
+    sortButton.addEventListener('click', () => {
+        showSortMenu();
+    });
+}
+
+function showSortMenu() {
+    // Create sort menu
+    const sortMenu = document.createElement('div');
+    sortMenu.className = 'absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-20 border border-gray-100 dark:border-gray-700';
+    sortMenu.style.top = '100%';
+    
+    // Create menu items
+    sortOptions.forEach(option => {
+        const item = document.createElement('button');
+        item.className = `block w-full text-left px-4 py-2 text-sm ${currentSort === option.id ? 
+            'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' : 
+            'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`;
+        item.textContent = option.label;
+        
+        item.addEventListener('click', () => {
+            currentSort = option.id;
+            applyFiltersAndSort();
+            document.body.removeChild(sortMenu);
+        });
+        
+        sortMenu.appendChild(item);
+    });
+    
+    // Position menu relative to sort button
+    const buttonRect = sortButton.getBoundingClientRect();
+    sortMenu.style.position = 'fixed';
+    sortMenu.style.top = `${buttonRect.bottom + window.scrollY}px`;
+    sortMenu.style.left = `${buttonRect.left + window.scrollX}px`;
+    
+    // Add click outside to close
+    function handleClickOutside(e) {
+        if (!sortMenu.contains(e.target) && e.target !== sortButton) {
+            document.body.removeChild(sortMenu);
+            document.removeEventListener('click', handleClickOutside);
+        }
+    }
+    
+    // Add to body
+    document.body.appendChild(sortMenu);
+    
+    // Add event listener with slight delay to prevent immediate closing
+    setTimeout(() => {
+        document.addEventListener('click', handleClickOutside);
+    }, 100);
+}
+
+// Sort homework data
+function sortHomeworkData(homeworkData) {
+    return [...homeworkData].sort((a, b) => {
+        if (currentSort === 'due-date-asc') {
+            return new Date(a.due_date) - new Date(b.due_date);
+        } else if (currentSort === 'due-date-desc') {
+            return new Date(b.due_date) - new Date(a.due_date);
+        } else if (currentSort === 'recently-added') {
+            return new Date(b.created_at) - new Date(a.created_at);
+        } else if (currentSort === 'status') {
+            // Priority: overdue > pending > in-progress > completed
+            const statusPriority = {
+                'overdue': 0,
+                'pending': 1,
+                'in-progress': 2,
+                'completed': 3
+            };
+            
+            // Calculate if overdue
+            const aDueDate = new Date(a.due_date);
+            const bDueDate = new Date(b.due_date);
+            const now = new Date();
+            
+            const aIsOverdue = aDueDate < now && a.status !== 'completed';
+            const bIsOverdue = bDueDate < now && b.status !== 'completed';
+            
+            const aStatus = aIsOverdue ? 'overdue' : a.status;
+            const bStatus = bIsOverdue ? 'overdue' : b.status;
+            
+            return statusPriority[aStatus] - statusPriority[bStatus];
+        }
+        
+        return 0;
+    });
+}
+
+// Apply filters and sort to homework data
+function applyFiltersAndSort() {
+    // Get current user
+    supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+            loadHomework(user.id);
+        }
+    });
+}
+
+// Filter homework data based on current filter
+function filterHomeworkData(homeworkData) {
+    if (currentFilter === 'all') {
+        return homeworkData;
+    }
+    
+    const now = new Date();
+    
+    return homeworkData.filter(homework => {
+        const dueDate = new Date(homework.due_date);
+        const isOverdue = dueDate < now && homework.status !== 'completed';
+        
+        if (currentFilter === 'overdue' && isOverdue) {
+            return true;
+        }
+        
+        if (currentFilter === 'completed' && homework.status === 'completed') {
+            return true;
+        }
+        
+        if (currentFilter === 'in-progress' && homework.status === 'in-progress') {
+            return true;
+        }
+        
+        if (currentFilter === 'pending' && homework.status === 'pending' && !isOverdue) {
+            return true;
+        }
+        
+        return false;
+    });
+}
+
+// Update load homework function to use filters and sorting
+async function loadHomework(userId) {
+    try {
+        // Show loading state
+        homeworkList.innerHTML = `
+            <div class="p-6 animate-pulse">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-4">
+                            <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                            <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
+                        </div>
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mt-2"></div>
+                        <div class="mt-4 flex items-center space-x-4">
+                            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-4">
+                        <div class="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                        <div class="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Determine sort order for initial query
+        const orderField = currentSort.startsWith('due-date') ? 'due_date' : 
+                        (currentSort === 'recently-added' ? 'created_at' : 'due_date');
+        const ascending = currentSort === 'due-date-asc';
+
+        const { data: homeworkData, error } = await supabase
+            .from('homework_assignments')
+            .select(`
+                id,
+                title,
+                description,
+                due_date,
+                class_id,
+                created_at,
+                updated_at,
+                homework_submissions(status)
+            `)
+            .order(orderField, { ascending });
+
+        if (error) {
+            throw error;
+        }
+
+        homeworkList.innerHTML = '';
+        
+        if (homeworkData.length === 0) {
+            homeworkList.innerHTML = '<div class="p-8 text-center text-gray-500 dark:text-gray-400">You have no homework assignments.</div>';
+            noAssignmentsEl.classList.remove('hidden');
+            updateStatusCounters([]);
+            return;
+        }
+        
+        // Process homework data - Add status property
+        homeworkData.forEach((homework) => {
+            const submission = homework.homework_submissions && homework.homework_submissions[0];
+            homework.status = submission ? submission.status : 'pending';
+        });
+        
+        // Apply filter
+        const filteredData = filterHomeworkData(homeworkData);
+        
+        // Apply sort (for status or other complex sorts)
+        const sortedData = currentSort === 'status' ? sortHomeworkData(filteredData) : filteredData;
+        
+        if (filteredData.length === 0) {
+            homeworkList.innerHTML = `<div class="p-8 text-center text-gray-500 dark:text-gray-400">No ${currentFilter} assignments found.</div>`;
+            noAssignmentsEl.classList.add('hidden');
+        } else {
+            noAssignmentsEl.classList.add('hidden');
+            
+            // Display sorted and filtered data
+            sortedData.forEach((homework) => {
+                homeworkList.innerHTML += createHomeworkItem(homework);
+            });
+        }
+        
+        // Update counters based on all data
+        updateStatusCounters(homeworkData);
+        
+        // Update filter button text to show active filter
+        if (filterButton) {
+            const filterName = filterOptions.find(opt => opt.id === currentFilter)?.label || 'Filter';
+            const filterLabel = filterButton.querySelector('span');
+            if (filterLabel) {
+                filterLabel.textContent = filterName;
+            }
+        }
+        
+        // Update sort button text to show active sort
+        if (sortButton) {
+            const sortName = sortOptions.find(opt => opt.id === currentSort)?.label || 'Sort';
+            const sortLabel = sortButton.querySelector('span');
+            if (sortLabel) {
+                sortLabel.textContent = sortName;
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error loading homework:', error);
+        homeworkList.innerHTML = `
+            <div class="p-8 text-center">
+                <svg class="w-16 h-16 mx-auto text-red-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <p class="text-red-500 dark:text-red-400 font-medium mb-2">Error loading homework assignments</p>
+                <p class="text-gray-500 dark:text-gray-400">Please refresh the page to try again</p>
+            </div>
+        `;
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    fetchHomework();
+}); 

@@ -8,88 +8,257 @@
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Custom styles -->
     <link rel="stylesheet" type="text/css" href="../main-styles.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
         }
+    </script>
+    <!-- Loading animation styles -->
+    <style>
+        :root {
+            --main-color: transparent;
+            --point-color: #fff;
+            --size: 4px;
+        }
+
+        /* Button loader */
+        .btn-loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .btn-loader .loader__element {
+            border-radius: 100%;
+            border: var(--size) solid var(--point-color);
+            margin: calc(var(--size)*0.7);
+            width: 0;
+            height: 0;
+        }
+        
+        .btn-loader .loader__element:nth-child(1) {
+            animation: preloader .6s ease-in-out alternate infinite;
+        }
+        
+        .btn-loader .loader__element:nth-child(2) {
+            animation: preloader .6s ease-in-out alternate .2s infinite;
+        }
+        
+        .btn-loader .loader__element:nth-child(3) {
+            animation: preloader .6s ease-in-out alternate .4s infinite;
+        }
+        
+        @keyframes preloader {
+            100% { transform: scale(1.8); }
+        }
+        
+        /* Dark mode support */
+        .dark .btn-loader .loader__element {
+            --point-color: #fff;
+        }
+        
+        /* Gray button variant */
+        .bg-gray-300 .btn-loader .loader__element {
+            --point-color: #6b7280;
+        }
+    </style>
+    <script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.getItem('darkMode') === 'enabled' ||
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        // Set initial icon states based on current mode
+        window.addEventListener('load', function() {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (darkModeToggle) {
+                const isDarkMode = document.documentElement.classList.contains('dark');
+                const sunIcon = darkModeToggle.querySelector('svg:first-of-type');
+                const moonIcon = darkModeToggle.querySelector('svg:last-of-type');
+                
+                if (isDarkMode) {
+                    sunIcon.style.display = 'block';
+                    moonIcon.style.display = 'none';
+                } else {
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'block';
+                }
+            }
+        });
     </script>
 </head>
 <body>
-    <div class="min-h-screen bg-gray-100">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
         <!-- Navigation Bar -->
-        <nav class="bg-white border-b border-gray-200 fixed w-full top-0 z-50">
+        <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 fixed w-full top-0 z-50 shadow-sm">
             <div class="container mx-auto px-4">
                 <div class="flex justify-between items-center h-16">
                     <!-- Left Side - Logo and Brand -->
                     <div class="flex items-center space-x-4">
                         <a href="../main-page.html" class="flex items-center space-x-2">
                             <img src="../assets/favicon.ico" alt="Logo" class="w-8 h-8">
-                            <span class="text-xl font-bold text-blue-600">EduTrack</span>
+                            <span class="text-xl font-bold text-primary-600 dark:text-primary-400">EduTrack</span>
                         </a>
                     </div>
 
                     <!-- Center - Navigation Links -->
                     <div class="hidden md:flex items-center space-x-8">
-                        <a href="../main-page.html" class="nav-link text-gray-600 hover:text-blue-500 font-medium">Home</a>
-                        <a href="#" class="nav-link text-gray-600 hover:text-blue-500 font-medium">Courses</a>
-                        <a href="#" class="nav-link text-gray-600 hover:text-blue-500 font-medium">Assignments</a>
-                        <a href="#" class="nav-link text-gray-600 hover:text-blue-500 font-medium">Resources</a>
+                        <a href="../main-page.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Home</a>
+                        <a href="#" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Courses</a>
+                        <a href="#" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Assignments</a>
+                        <a href="#" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Resources</a>
                     </div>
 
                     <!-- Right Side - User Menu and Settings -->
                     <div class="flex items-center space-x-6">
                         <!-- Dark Mode Toggle -->
-                        <button id="darkModeToggle" class="text-gray-600 hover:text-blue-500">
-                            <svg class="w-6 h-6 hidden dark:inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button id="darkModeToggle" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <!-- Sun Icon (shown in dark mode) -->
+                            <svg class="w-6 h-6" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                             </svg>
-                            <svg class="w-6 h-6 inline-block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <!-- Moon Icon (shown in light mode) -->
+                            <svg class="w-6 h-6" style="display: block;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                             </svg>
                         </button>
+                        
+                        <!-- Back to Profile -->
+                        <a href="../main-page.html" class="flex items-center text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            <span class="font-medium">Back to Home</span>
+                        </a>
                     </div>
                 </div>
             </div>
         </nav>
 
         <!-- Add padding to account for fixed navbar -->
-        <div class="pt-28">
+        <div class="pt-24">
             <div class="container mx-auto px-4">
                 <!-- Page Header -->
-                <div class="mb-8">
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Homework</h1>
-                    <p class="text-gray-600">View and manage your homework assignments</p>
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Homework</h1>
+                        <p class="text-gray-600 dark:text-gray-400">View and manage your assignments</p>
+                    </div>
                 </div>
 
-                <!-- Homework List -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                    <!-- Homework List Header -->
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-xl font-semibold text-gray-900">Current Assignments</h2>
-                            <div class="flex space-x-4">
-                                <button id="filterButton" class="flex items-center space-x-2 text-gray-600 hover:text-blue-500">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                                    </svg>
-                                    <span>Filter</span>
-                                </button>
-                                <button id="sortButton" class="flex items-center space-x-2 text-gray-600 hover:text-blue-500">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
-                                    </svg>
-                                    <span>Sort</span>
-                                </button>
-                            </div>
+                <!-- Action Bar -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 mb-6 border border-gray-100 dark:border-gray-700 flex flex-wrap justify-between items-center">
+                    <!-- Left: Stats -->
+                    <div class="flex space-x-6">
+                        <div class="text-center">
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">Pending</span>
+                            <span id="pendingCount" class="block text-xl font-bold text-primary-600 dark:text-primary-400">0</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">In Progress</span>
+                            <span id="progressCount" class="block text-xl font-bold text-blue-600 dark:text-blue-400">0</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">Completed</span>
+                            <span id="completedCount" class="block text-xl font-bold text-green-600 dark:text-green-400">0</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">Overdue</span>
+                            <span id="overdueCount" class="block text-xl font-bold text-red-600 dark:text-red-400">0</span>
                         </div>
                     </div>
 
-                    <!-- Homework List Content -->
-                    <div id="homeworkList" class="divide-y divide-gray-200">
-                        <!-- Homework items will be dynamically added here -->
+                    <!-- Right: Filter & Sort -->
+                    <div class="flex space-x-4">
+                        <button id="filterButton" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                            </svg>
+                            <span>Filter</span>
+                        </button>
+                        <button id="sortButton" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+                            </svg>
+                            <span>Sort</span>
+                        </button>
                     </div>
+                </div>
+
+                <!-- Homework List -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <!-- Homework List Header -->
+                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Current Assignments</h2>
+                    </div>
+
+                    <!-- Homework List Content -->
+                    <div id="homeworkList" class="divide-y divide-gray-200 dark:divide-gray-700 pb-2">
+                        <!-- Homework items will be dynamically added here -->
+                        
+                        <!-- Loading Skeleton -->
+                        <div class="p-6 pt-8 animate-pulse">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                                        <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
+                                    </div>
+                                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mt-2"></div>
+                                    <div class="mt-4 flex items-center space-x-4">
+                                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-4">
+                                    <div class="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                    <div class="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No Assignments Message (hidden by default) -->
+                <div id="noAssignments" class="hidden bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center mt-6">
+                    <svg class="w-16 h-16 mx-auto text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <p class="text-gray-500 dark:text-gray-400 mb-2">No homework assignments found.</p>
+                    <p class="text-primary-500 dark:text-primary-400 font-medium">Add a new assignment to get started!</p>
                 </div>
             </div>
         </div>
@@ -97,5 +266,19 @@
 
     <!-- Scripts -->
     <script src="homework.js" type="module"></script>
+    <script>
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            // Check if we have an active modal
+            const modal = document.querySelector('#submitHomeworkModal, #homeworkDetailsModal, #addHomeworkModal');
+            if (modal && !e.target.closest('.bg-white.dark\\:bg-gray-800')) {
+                // Clicked outside modal content, trigger escape key
+                document.dispatchEvent(new KeyboardEvent('keydown', {
+                    key: 'Escape',
+                    bubbles: true
+                }));
+            }
+        });
+    </script>
 </body>
 </html> 

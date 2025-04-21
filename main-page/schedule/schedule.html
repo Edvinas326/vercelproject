@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Schedule - EduTrack</title>
+    <!-- Add favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom styles -->
+    <link rel="stylesheet" type="text/css" href="../main-styles.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.getItem('darkMode') === 'enabled' ||
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        // Set initial icon states based on current mode
+        window.addEventListener('load', function() {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (darkModeToggle) {
+                const isDarkMode = document.documentElement.classList.contains('dark');
+                const sunIcon = darkModeToggle.querySelector('svg:first-of-type');
+                const moonIcon = darkModeToggle.querySelector('svg:last-of-type');
+                
+                if (isDarkMode) {
+                    sunIcon.style.display = 'block';
+                    moonIcon.style.display = 'none';
+                } else {
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'block';
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <!-- Navigation Bar -->
+        <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 fixed w-full top-0 z-50 shadow-sm">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Left Side - Logo and Brand -->
+                    <div class="flex items-center space-x-4">
+                        <a href="../main-page.html" class="flex items-center space-x-2">
+                            <img src="../assets/favicon.ico" alt="Logo" class="w-8 h-8">
+                            <span class="text-xl font-bold text-primary-600 dark:text-primary-400">EduTrack</span>
+                        </a>
+                    </div>
+
+                    <!-- Center - Navigation Links -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="../main-page.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Home</a>
+                        <a href="#" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Courses</a>
+                        <a href="../homework/homework.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Homework</a>
+                        <a href="#" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Resources</a>
+                    </div>
+
+                    <!-- Right Side - User Menu and Settings -->
+                    <div class="flex items-center space-x-6">
+                        <!-- Dark Mode Toggle -->
+                        <button id="darkModeToggle" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <!-- Sun Icon (shown in dark mode) -->
+                            <svg class="w-6 h-6" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <!-- Moon Icon (shown in light mode) -->
+                            <svg class="w-6 h-6" style="display: block;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Back to Profile -->
+                        <a href="../main-page.html" class="flex items-center text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            <span class="font-medium">Back to Home</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Add padding to account for fixed navbar -->
+        <div class="pt-24">
+            <div class="container mx-auto px-4">
+                <!-- Page Header -->
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Class Schedule</h1>
+                        <p class="text-gray-600 dark:text-gray-400">Manage your weekly class schedule</p>
+                    </div>
+                </div>
+
+                <!-- View selector tabs -->
+                <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
+                    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="view-tabs">
+                        <li class="mr-2">
+                            <button class="active-tab inline-block p-4 border-b-2 border-primary-500 text-primary-600 dark:text-primary-400" data-view="weekly">Weekly Calendar</button>
+                        </li>
+                        <li class="mr-2">
+                            <button class="inactive-tab inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" data-view="list">List View</button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Weekly Schedule View -->
+                <div id="weekly-view" class="mb-6 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <div class="min-w-[900px]">
+                            <!-- Time labels column -->
+                            <div class="flex">
+                                <!-- Empty top-left cell -->
+                                <div class="w-24 p-2 sticky left-0 bg-white dark:bg-gray-800 z-10"></div>
+                                
+                                <!-- Days of week headers -->
+                                <div class="flex-1 grid grid-cols-7">
+                                    <div class="p-3 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-l border-gray-200 dark:border-gray-700">Monday</div>
+                                    <div class="p-3 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-l border-gray-200 dark:border-gray-700">Tuesday</div>
+                                    <div class="p-3 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-l border-gray-200 dark:border-gray-700">Wednesday</div>
+                                    <div class="p-3 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-l border-gray-200 dark:border-gray-700">Thursday</div>
+                                    <div class="p-3 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-l border-gray-200 dark:border-gray-700">Friday</div>
+                                    <div class="p-3 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-l border-gray-200 dark:border-gray-700">Saturday</div>
+                                    <div class="p-3 text-center font-medium text-gray-700 dark:text-gray-300 border-b border-l border-gray-200 dark:border-gray-700">Sunday</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Schedule grid -->
+                            <div id="schedule-grid" class="relative">
+                                <!-- Schedule rows will be dynamically generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- List View (hidden by default) -->
+                <div id="list-view" class="hidden mb-6 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">All Classes</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Class</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Days</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Time</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Room</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Instructor</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="classes-list">
+                                <!-- Classes list will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Schedule Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Class Hours</h3>
+                            <span class="text-2xl font-bold text-primary-500">12</span>
+                        </div>
+                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+                            <div class="h-2 bg-primary-500 rounded-full" style="width: 60%"></div>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">12 hours out of recommended 20</p>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Current Credits</h3>
+                            <span class="text-2xl font-bold text-primary-500">15</span>
+                        </div>
+                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+                            <div class="h-2 bg-primary-500 rounded-full" style="width: 75%"></div>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">15 credits out of recommended 20</p>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Free Days</h3>
+                            <span class="text-2xl font-bold text-primary-500">2</span>
+                        </div>
+                        <div class="flex justify-between mt-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                Saturday
+                            </span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                Sunday
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Class Modal -->
+    <!-- This modal has been disabled as we removed the Add Class functionality -->
+    <!--
+    <div id="add-class-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 relative mx-4">
+            <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Add New Class</h2>
+            <form id="add-class-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Class Title</label>
+                    <input type="text" id="class-title" required class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Course Code</label>
+                    <input type="text" id="course-code" required class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Time</label>
+                        <input type="time" id="start-time" required class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Time</label>
+                        <input type="time" id="end-time" required class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Days of Week</label>
+                    <div class="flex space-x-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="days" value="mon" class="rounded text-primary-500 focus:ring-primary-500 h-4 w-4">
+                            <span class="ml-1 text-sm text-gray-700 dark:text-gray-300">M</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="days" value="tue" class="rounded text-primary-500 focus:ring-primary-500 h-4 w-4">
+                            <span class="ml-1 text-sm text-gray-700 dark:text-gray-300">T</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="days" value="wed" class="rounded text-primary-500 focus:ring-primary-500 h-4 w-4">
+                            <span class="ml-1 text-sm text-gray-700 dark:text-gray-300">W</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="days" value="thu" class="rounded text-primary-500 focus:ring-primary-500 h-4 w-4">
+                            <span class="ml-1 text-sm text-gray-700 dark:text-gray-300">Th</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="days" value="fri" class="rounded text-primary-500 focus:ring-primary-500 h-4 w-4">
+                            <span class="ml-1 text-sm text-gray-700 dark:text-gray-300">F</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="days" value="sat" class="rounded text-primary-500 focus:ring-primary-500 h-4 w-4">
+                            <span class="ml-1 text-sm text-gray-700 dark:text-gray-300">Sa</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="days" value="sun" class="rounded text-primary-500 focus:ring-primary-500 h-4 w-4">
+                            <span class="ml-1 text-sm text-gray-700 dark:text-gray-300">Su</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Room</label>
+                    <input type="text" id="room" required class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Instructor</label>
+                    <input type="text" id="instructor" required class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Credits</label>
+                    <input type="number" id="credits" min="1" max="6" required class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Class Color</label>
+                    <div class="flex space-x-3">
+                        <label class="flex items-center">
+                            <input type="radio" name="color" value="blue" class="rounded-full text-blue-500 focus:ring-blue-500 h-4 w-4" checked>
+                            <span class="ml-1 h-4 w-4 bg-blue-500 rounded-full"></span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="color" value="green" class="rounded-full text-green-500 focus:ring-green-500 h-4 w-4">
+                            <span class="ml-1 h-4 w-4 bg-green-500 rounded-full"></span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="color" value="red" class="rounded-full text-red-500 focus:ring-red-500 h-4 w-4">
+                            <span class="ml-1 h-4 w-4 bg-red-500 rounded-full"></span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="color" value="purple" class="rounded-full text-purple-500 focus:ring-purple-500 h-4 w-4">
+                            <span class="ml-1 h-4 w-4 bg-purple-500 rounded-full"></span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="color" value="yellow" class="rounded-full text-yellow-500 focus:ring-yellow-500 h-4 w-4">
+                            <span class="ml-1 h-4 w-4 bg-yellow-500 rounded-full"></span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="color" value="pink" class="rounded-full text-pink-500 focus:ring-pink-500 h-4 w-4">
+                            <span class="ml-1 h-4 w-4 bg-pink-500 rounded-full"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end pt-4">
+                    <button type="button" id="cancel-add" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 mr-2 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600">
+                        Add Class
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    -->
+
+    <!-- Scripts -->
+    <script src="schedule.js" type="module"></script>
+</body>
+</html> 

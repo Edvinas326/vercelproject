@@ -174,8 +174,8 @@ function createHomeworkItem(homework, isFirst = false) {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
                             N/A hours
+                        </div>
                     </div>
-                </div>
                 </div>
                 <div class="flex items-center gap-2">
                     <button class="p-1 text-gray-400 hover:text-blue-500 dark:text-gray-500 dark:hover:text-blue-400 transition-colors rounded hover:bg-gray-100 dark:hover:bg-gray-700" 
@@ -787,12 +787,12 @@ window.viewDetails = async function(homeworkId) {
     }
 };
 
-// Add homework button event listener - commented out since button was removed
-// if (addHomeworkBtn) {
-//     addHomeworkBtn.addEventListener('click', () => {
-//         showAddHomeworkModal();
-//     });
-// }
+// Add homework button event listener
+if (addHomeworkBtn) {
+    addHomeworkBtn.addEventListener('click', () => {
+        showAddHomeworkModal();
+    });
+}
 
 // Create and show the add homework modal
 function showAddHomeworkModal() {

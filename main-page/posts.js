@@ -114,13 +114,54 @@ function initializePostCreation(userId) {
                 }
                 
                 // Get user profile for the post
+                console.log(`Getting profile for new post, user_id: ${actualUserId}`);
+
+                // First try direct lookup
                 const { data: profileData, error: profileError } = await supabase
                     .from('profiles')
-                    .select('username, full_name, avatar_url')
+                    .select('*')
                     .eq('id', actualUserId)
                     .single();
                     
-                if (!profileError) {
+                if (profileError) {
+                    console.log(`Direct profile lookup failed for new post, trying to load all profiles...`);
+                    
+                    // Try to get all profiles and find a match
+                    const { data: allProfiles, error: allProfilesError } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .limit(100);
+                        
+                    if (allProfilesError || !allProfiles || allProfiles.length === 0) {
+                        console.log(`Could not find any profiles for new post, using generic placeholder`);
+                        const shortId = actualUserId.substring(0, 4);
+                        newPost.profile = { 
+                            full_name: `User ${shortId}`,
+                            username: null,
+                            avatar_url: null
+                        };
+                    } else {
+                        // Look for a profile that might match this user in any way
+                        const matchedProfile = allProfiles.find(p => 
+                            p.id === actualUserId || 
+                            p.user_id === actualUserId || 
+                            p.auth_id === actualUserId);
+                        
+                        if (matchedProfile) {
+                            console.log(`Found matching profile for new post through search`);
+                            newPost.profile = matchedProfile;
+                        } else {
+                            console.log(`No matching profile found for new post among ${allProfiles.length} profiles`);
+                            const shortId = actualUserId.substring(0, 4);
+                            newPost.profile = { 
+                                full_name: `User ${shortId}`,
+                                username: null,
+                                avatar_url: null
+                            };
+                        }
+                    }
+                } else {
+                    console.log(`Direct profile lookup successful for new post`);
                     newPost.profile = profileData;
                 }
                 
@@ -159,6 +200,7 @@ function initializePostCreation(userId) {
 
 // Load posts from the database
 async function loadPosts() {
+    console.log("Starting to load posts...");
     const postsContainer = document.getElementById('posts-container');
     if (!postsContainer) {
         console.error('Posts container not found');
@@ -168,54 +210,138 @@ async function loadPosts() {
     try {
         // Get authenticated user
         const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            console.error('User not authenticated');
+            window.location.href = '../login page/login.html';
+            return;
+        }
+        console.log("Current user ID:", user.id);
 
-        // Fetch posts without using joins
+        // First, display a loading state
+        postsContainer.innerHTML = `
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center">
+                <div class="animate-pulse flex flex-col items-center">
+                    <div class="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 mb-4"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-2.5"></div>
+                    <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-6"></div>
+                    <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2.5"></div>
+                    <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                </div>
+                <p class="text-gray-500 dark:text-gray-400 mt-4">Loading posts...</p>
+            </div>
+        `;
+
+        // Fetch posts with proper ordering
+        console.log("Fetching posts from database...");
         const { data: posts, error } = await supabase
             .from('posts')
             .select('*')
             .order('created_at', { ascending: false })
             .limit(20);
 
-        if (error) throw error;
+        if (error) {
+            console.error('Error fetching posts:', error);
+            throw error;
+        }
 
         // Clear existing posts
         postsContainer.innerHTML = '';
         
         if (!posts || posts.length === 0) {
+            console.log("No posts found");
             postsContainer.innerHTML = `
-                <div class="text-center py-8">
-                    <p class="text-gray-500">No posts yet. Be the first to post!</p>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center">
+                    <svg class="w-16 h-16 mx-auto text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                    <p class="text-gray-500 dark:text-gray-400 mb-2">No posts yet.</p>
+                    <p class="text-primary-500 dark:text-primary-400 font-medium">Be the first to share something!</p>
                 </div>
             `;
             return;
         }
 
+        console.log(`Fetched ${posts.length} posts, now loading profiles for each...`);
+
         // For each post, fetch the corresponding profile
         for (const post of posts) {
-            // Fetch user profile for this post
-            const { data: profileData, error: profileError } = await supabase
-                .from('profiles')
-                .select('username, full_name, avatar_url')
-                .eq('id', post.user_id)
-                .single();
+            try {
+                console.log(`Processing post ${post.id}, user_id: ${post.user_id}`);
                 
-            if (!profileError) {
-                post.profile = profileData;
-            } else {
-                console.error('Error fetching profile for post:', profileError);
-                post.profile = {}; // Set a default empty profile
+                // First try direct lookup
+                const { data: profileData, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', post.user_id)
+                    .single();
+                
+                if (profileError) {
+                    console.log(`Direct profile lookup failed, trying to load all profiles...`);
+                    
+                    // Try to get all profiles and find a match - this is inefficient but works for small datasets
+                    const { data: allProfiles, error: allProfilesError } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .limit(100);
+                        
+                    if (allProfilesError || !allProfiles || allProfiles.length === 0) {
+                        console.log(`Could not find any profiles, using generic placeholder`);
+                        const shortId = post.user_id.substring(0, 4);
+                        post.profile = { 
+                            full_name: `User ${shortId}`,
+                            username: null,
+                            avatar_url: null
+                        };
+                    } else {
+                        // Look for a profile that might match this user in any way
+                        const matchedProfile = allProfiles.find(p => 
+                            p.id === post.user_id || 
+                            p.user_id === post.user_id || 
+                            p.auth_id === post.user_id);
+                        
+                        if (matchedProfile) {
+                            console.log(`Found matching profile for user ${post.user_id} through search`);
+                            post.profile = matchedProfile;
+                        } else {
+                            console.log(`No matching profile found among ${allProfiles.length} profiles`);
+                            const shortId = post.user_id.substring(0, 4);
+                            post.profile = { 
+                                full_name: `User ${shortId}`,
+                                username: null,
+                                avatar_url: null
+                            };
+                        }
+                    }
+                } else {
+                    console.log(`Direct profile lookup successful for user ${post.user_id}`);
+                    post.profile = profileData;
+                }
+                
+                // Create and append post element
+                const postElement = createPostElement(post, user.id);
+                postsContainer.appendChild(postElement);
+            } catch (profileFetchError) {
+                console.error(`Error processing post ${post.id}:`, profileFetchError);
+                // Still create the post element with default/placeholder data
+                post.profile = { 
+                    full_name: 'Unknown User',
+                    username: null,
+                    avatar_url: null
+                };
+                const postElement = createPostElement(post, user.id);
+                postsContainer.appendChild(postElement);
             }
-            
-            // Create and append post element
-            const postElement = createPostElement(post, user.id);
-            postsContainer.appendChild(postElement);
         }
 
     } catch (error) {
         console.error('Error loading posts:', error);
         postsContainer.innerHTML = `
-            <div class="text-center py-8">
-                <p class="text-red-500">Error loading posts. Please try again.</p>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center">
+                <svg class="w-16 h-16 mx-auto text-red-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <p class="text-red-500 dark:text-red-400 font-medium mb-2">Error loading posts</p>
+                <p class="text-gray-500 dark:text-gray-400">Please refresh the page to try again</p>
             </div>
         `;
     }
@@ -224,49 +350,69 @@ async function loadPosts() {
 // Create a post element
 function createPostElement(post, currentUserId) {
     const postEl = document.createElement('div');
-    postEl.className = 'post-item bg-white rounded-lg shadow-md p-6 mb-4';
+    postEl.className = 'post-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-4 border border-gray-100 dark:border-gray-700';
     postEl.setAttribute('data-post-id', post.id);
     
-    // Use the profile data we fetched separately
+    // Use the profile data we fetched separately, with fallbacks for each property
     const profileData = post.profile || {};
     const fullName = profileData.full_name || 'Unknown User';
     const username = profileData.username ? `@${profileData.username}` : '';
-    const avatarUrl = profileData.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=random`;
+    
+    // Create a default avatar URL if none exists
+    let avatarUrl;
+    if (profileData.avatar_url) {
+        avatarUrl = profileData.avatar_url;
+    } else {
+        // Use UI Avatars with the name as a fallback
+        const namePlaceholder = encodeURIComponent(fullName || 'User');
+        avatarUrl = `https://ui-avatars.com/api/?name=${namePlaceholder}&background=random`;
+    }
     
     const isOwnPost = post.user_id === currentUserId;
-    const postDate = new Date(post.created_at).toLocaleString();
+    
+    // Format the post date
+    let postDate;
+    try {
+        postDate = new Date(post.created_at).toLocaleString();
+    } catch (e) {
+        console.error('Error formatting post date:', e);
+        postDate = 'Unknown date';
+    }
+
+    // Ensure the post content is not null
+    const postContent = post.content || '';
 
     postEl.innerHTML = `
         <div class="flex items-start space-x-4">
-            <img src="${avatarUrl}" alt="Profile" class="w-12 h-12 rounded-full">
+            <img src="${avatarUrl}" alt="Profile" class="w-12 h-12 rounded-full profile-photo">
             <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="font-semibold text-gray-900">${fullName}</h3>
-                        <p class="text-sm text-gray-500">${username} · ${postDate}</p>
+                        <h3 class="font-semibold text-gray-900 dark:text-white">${fullName}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">${username} · ${postDate}</p>
                     </div>
                     ${isOwnPost ? `
                         <div class="relative dropdown-container">
-                            <button class="post-menu-btn text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Post options">
+                            <button class="post-menu-btn text-gray-400 dark:text-gray-500 hover:text-primary-500 dark:hover:text-primary-400 focus:outline-none" aria-label="Post options">
                                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 6a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm-2 6a2 2 0 104 0 2 2 0 00-4 0z"></path>
                                 </svg>
                             </button>
-                            <div class="post-dropdown hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20 border border-gray-200">
+                            <div class="post-dropdown hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-20 border border-gray-200 dark:border-gray-700">
                                 <div class="py-1">
-                                    <button class="edit-post-btn w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                    <button class="edit-post-btn w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                         </svg>
                                         Edit Post
                                     </button>
-                                    <button class="delete-post-btn w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center" data-post-id="${post.id}">
+                                    <button class="delete-post-btn w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center" data-post-id="${post.id}">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
                                         Delete Post
                                     </button>
-                                    <button class="report-post-btn w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                    <button class="report-post-btn w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                         </svg>
@@ -275,17 +421,35 @@ function createPostElement(post, currentUserId) {
                                 </div>
                             </div>
                         </div>
-                    ` : ''}
+                    ` : `
+                        <div class="relative dropdown-container">
+                            <button class="post-menu-btn text-gray-400 dark:text-gray-500 hover:text-primary-500 dark:hover:text-primary-400 focus:outline-none" aria-label="Post options">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 6a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm-2 6a2 2 0 104 0 2 2 0 00-4 0z"></path>
+                                </svg>
+                            </button>
+                            <div class="post-dropdown hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-20 border border-gray-200 dark:border-gray-700">
+                                <div class="py-1">
+                                    <button class="report-post-btn w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                        </svg>
+                                        Report Post
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `}
                 </div>
-                <p class="mt-2 text-gray-700 whitespace-pre-line">${post.content}</p>
+                <p class="mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-line">${postContent}</p>
                 <div class="mt-4 flex items-center space-x-4">
-                    <button class="like-btn flex items-center text-gray-500 hover:text-blue-500" data-post-id="${post.id}">
+                    <button class="like-btn flex items-center text-gray-500 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 transition-colors" data-post-id="${post.id}">
                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
                         </svg>
                         <span>${post.likes_count || 0}</span>
                     </button>
-                    <button class="comment-btn flex items-center text-gray-500 hover:text-blue-500" data-post-id="${post.id}">
+                    <button class="comment-btn flex items-center text-gray-500 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 transition-colors" data-post-id="${post.id}">
                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                         </svg>
@@ -296,11 +460,11 @@ function createPostElement(post, currentUserId) {
         </div>
     `;
 
-    // Add event listeners for dropdown menu
-    if (isOwnPost) {
-        const menuBtn = postEl.querySelector('.post-menu-btn');
-        const dropdown = postEl.querySelector('.post-dropdown');
-        
+    // Add event listeners for dropdown menu (for both own posts and other users' posts)
+    const menuBtn = postEl.querySelector('.post-menu-btn');
+    const dropdown = postEl.querySelector('.post-dropdown');
+    
+    if (menuBtn && dropdown) {
         // Toggle dropdown menu with smooth animation
         menuBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -334,12 +498,14 @@ function createPostElement(post, currentUserId) {
                 dropdown.classList.remove('closing');
             }, 150); // Match this timing with the CSS transition duration
         }
-        
+    }
+
+    // Add additional event listeners based on post ownership
+    if (isOwnPost) {
         // Delete button
         const deleteBtn = postEl.querySelector('.delete-post-btn');
         if (deleteBtn) {
             deleteBtn.addEventListener('click', () => {
-                closeDropdownWithAnimation();
                 deletePost(post.id);
             });
         }
@@ -348,25 +514,27 @@ function createPostElement(post, currentUserId) {
         const editBtn = postEl.querySelector('.edit-post-btn');
         if (editBtn) {
             editBtn.addEventListener('click', () => {
-                closeDropdownWithAnimation();
                 editPost(post);
             });
         }
-        
-        // Report button
-        const reportBtn = postEl.querySelector('.report-post-btn');
-        if (reportBtn) {
-            reportBtn.addEventListener('click', () => {
-                closeDropdownWithAnimation();
-                reportPost(post.id);
-            });
-        }
     }
-
+    
+    // Report button (available for all posts)
+    const reportBtn = postEl.querySelector('.report-post-btn');
+    if (reportBtn) {
+        reportBtn.addEventListener('click', () => {
+            reportPost(post.id);
+        });
+    }
+    
     // Like button
     const likeBtn = postEl.querySelector('.like-btn');
-    likeBtn.addEventListener('click', () => toggleLike(post.id, currentUserId));
-
+    if (likeBtn) {
+        likeBtn.addEventListener('click', () => {
+            toggleLike(post.id, currentUserId);
+        });
+    }
+    
     return postEl;
 }
 
