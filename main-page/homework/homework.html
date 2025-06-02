@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homework - EduTrack</title>
+    <title>Namų darbai - EduTrack</title>
     <!-- Add favicon -->
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
     <!-- Tailwind CSS -->
@@ -128,19 +128,11 @@
                 <div class="flex justify-between items-center h-16">
                     <!-- Left Side - Logo and Brand -->
                     <div class="flex items-center space-x-4">
-                        <a href="../main-page.html" class="flex items-center space-x-2">
-                            <img src="../assets/favicon.ico" alt="Logo" class="w-8 h-8">
-                            <span class="text-xl font-bold text-primary-600 dark:text-primary-400">EduTrack</span>
-                        </a>
+                        <!-- Pašalintas logotipas ir EduTrack tekstas -->
                     </div>
 
                     <!-- Center - Navigation Links -->
-                    <div class="hidden md:flex items-center space-x-8">
-                        <a href="../main-page.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Home</a>
-                        <a href="#" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Courses</a>
-                        <a href="#" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Assignments</a>
-                        <a href="#" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Resources</a>
-                    </div>
+                    <!-- Pašalintos visos navigacijos nuorodos -->
 
                     <!-- Right Side - User Menu and Settings -->
                     <div class="flex items-center space-x-6">
@@ -157,11 +149,11 @@
                         </button>
                         
                         <!-- Back to Profile -->
-                        <a href="../main-page.html" class="flex items-center text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                        <a href="../student/dashboard.html" class="flex items-center text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
                             <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                             </svg>
-                            <span class="font-medium">Back to Home</span>
+                            <span class="font-medium">Atgal į skydelį</span>
                         </a>
                     </div>
                 </div>
@@ -174,8 +166,8 @@
                 <!-- Page Header -->
                 <div class="mb-8 flex justify-between items-center">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Homework</h1>
-                        <p class="text-gray-600 dark:text-gray-400">View and manage your assignments</p>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Namų darbai</h1>
+                        <p class="text-gray-600 dark:text-gray-400">Peržiūrėkite ir valdykite savo užduotis</p>
                     </div>
                 </div>
 
@@ -184,19 +176,19 @@
                     <!-- Left: Stats -->
                     <div class="flex space-x-6">
                         <div class="text-center">
-                            <span class="block text-sm text-gray-500 dark:text-gray-400">Pending</span>
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">Laukia</span>
                             <span id="pendingCount" class="block text-xl font-bold text-primary-600 dark:text-primary-400">0</span>
                         </div>
                         <div class="text-center">
-                            <span class="block text-sm text-gray-500 dark:text-gray-400">In Progress</span>
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">Vykdoma</span>
                             <span id="progressCount" class="block text-xl font-bold text-blue-600 dark:text-blue-400">0</span>
                         </div>
                         <div class="text-center">
-                            <span class="block text-sm text-gray-500 dark:text-gray-400">Completed</span>
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">Atlikta</span>
                             <span id="completedCount" class="block text-xl font-bold text-green-600 dark:text-green-400">0</span>
                         </div>
                         <div class="text-center">
-                            <span class="block text-sm text-gray-500 dark:text-gray-400">Overdue</span>
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">Pavėluota</span>
                             <span id="overdueCount" class="block text-xl font-bold text-red-600 dark:text-red-400">0</span>
                         </div>
                     </div>
@@ -207,13 +199,13 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                             </svg>
-                            <span>Filter</span>
+                            <span>Filtruoti</span>
                         </button>
                         <button id="sortButton" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
                             </svg>
-                            <span>Sort</span>
+                            <span>Rūšiuoti</span>
                         </button>
                     </div>
                 </div>
@@ -222,7 +214,7 @@
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
                     <!-- Homework List Header -->
                     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Current Assignments</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Dabartinės užduotys</h2>
                     </div>
 
                     <!-- Homework List Content -->
@@ -257,8 +249,8 @@
                     <svg class="w-16 h-16 mx-auto text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
                     </svg>
-                    <p class="text-gray-500 dark:text-gray-400 mb-2">No homework assignments found.</p>
-                    <p class="text-primary-500 dark:text-primary-400 font-medium">Add a new assignment to get started!</p>
+                    <p class="text-gray-500 dark:text-gray-400 mb-2">Namų darbų nerasta.</p>
+                    <p class="text-primary-500 dark:text-primary-400 font-medium">Pridėkite naują užduotį norėdami pradėti!</p>
                 </div>
             </div>
         </div>

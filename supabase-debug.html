@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Debug Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #2563eb;
+        }
+        .output {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        h2 {
+            margin-top: 30px;
+        }
+        .test-form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .test-form input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .credentials {
+            background-color: #f0f9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Supabase Debug Tool</h1>
+    
+    <div class="credentials">
+        <h3>Test Student Account Credentials:</h3>
+        <p><strong>Email:</strong> student@test.com</p>
+        <p><strong>Password:</strong> test123</p>
+    </div>
+    
+    <h2>1. Check Connection</h2>
+    <button id="checkConnection">Check Supabase Connection</button>
+    <div id="connectionOutput" class="output"></div>
+    
+    <h2>2. Create Test Student Account</h2>
+    <div class="test-form">
+        <input type="email" id="email" value="student@test.com" readonly />
+        <input type="password" id="password" value="test123" readonly />
+        <div>
+            <button id="createStudent">Create Test Student Account</button>
+        </div>
+    </div>
+    <div id="authOutput" class="output"></div>
+    
+    <h2>3. Test Login</h2>
+    <div class="test-form">
+        <input type="email" id="loginEmail" value="student@test.com" readonly />
+        <input type="password" id="loginPassword" value="test123" readonly />
+        <div>
+            <button id="testLogin">Test Login</button>
+        </div>
+    </div>
+    <div id="loginOutput" class="output"></div>
+    
+    <h2>4. Verify Account</h2>
+    <button id="verifyAccount">Verify Account</button>
+    <div id="verifyOutput" class="output"></div>
+
+    <script type="module">
+        import supabase from './supabase-config.js';
+        
+        // Connection check
+        document.getElementById('checkConnection').addEventListener('click', async () => {
+            const output = document.getElementById('connectionOutput');
+            output.innerHTML = 'Checking connection...';
+            
+            try {
+                const { data, error } = await supabase.from('profiles').select('count').limit(1);
+                
+                if (error) {
+                    output.innerHTML = `
+                        <div style="color: red">❌ Connection check failed</div>
+                        <pre>${JSON.stringify(error, null, 2)}</pre>
+                    `;
+                } else {
+                    output.innerHTML = `
+                        <div style="color: green">✅ Connection successful</div>
+                        <pre>Supabase project: ${supabase.supabaseUrl}</pre>
+                    `;
+                }
+            } catch (error) {
+                output.innerHTML = `
+                    <div style="color: red">❌ Connection error</div>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        });
+        
+        // Create student account
+        document.getElementById('createStudent').addEventListener('click', async () => {
+            const output = document.getElementById('authOutput');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            output.innerHTML = 'Creating test student account...';
+            
+            try {
+                // Step 1: Create the user
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: 'Test Student',
+                            username: 'teststudent',
+                            role: 'student'
+                        }
+                    }
+                });
+                
+                if (authError) {
+                    output.innerHTML = `
+                        <div style="color: red">❌ Signup failed</div>
+                        <pre>${JSON.stringify(authError, null, 2)}</pre>
+                    `;
+                    return;
+                }
+                
+                if (!authData?.user) {
+                    output.innerHTML = `
+                        <div style="color: red">❌ No user data returned</div>
+                    `;
+                    return;
+                }
+                
+                // Step 2: Create the profile
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .insert({
+                        id: authData.user.id,
+                        full_name: 'Test Student',
+                        username: 'teststudent',
+                        email: email,
+                        role: 'student'
+                    })
+                    .select()
+                    .single();
+                
+                if (profileError) {
+                    // Try to update if it already exists
+                    const { error: updateError } = await supabase
+                        .from('profiles')
+                        .upsert({
+                            id: authData.user.id,
+                            full_name: 'Test Student',
+                            username: 'teststudent',
+                            email: email,
+                            role: 'student'
+                        })
+                        .select()
+                        .single();
+                    
+                    if (updateError) {
+                        output.innerHTML = `
+                            <div style="color: red">❌ Profile creation failed</div>
+                            <pre>${JSON.stringify(updateError, null, 2)}</pre>
+                        `;
+                        return;
+                    }
+                }
+                
+                output.innerHTML = `
+                    <div style="color: green">✅ Test account created successfully</div>
+                    <pre>${JSON.stringify(authData, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                output.innerHTML = `
+                    <div style="color: red">❌ Unexpected error</div>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        });
+        
+        // Test login
+        document.getElementById('testLogin').addEventListener('click', async () => {
+            const output = document.getElementById('loginOutput');
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            output.innerHTML = 'Testing login...';
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                
+                if (error) {
+                    output.innerHTML = `
+                        <div style="color: red">❌ Login failed</div>
+                        <pre>${JSON.stringify(error, null, 2)}</pre>
+                    `;
+                    return;
+                }
+                
+                output.innerHTML = `
+                    <div style="color: green">✅ Login successful</div>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+                // Store user data in localStorage
+                localStorage.setItem('current_user', JSON.stringify({
+                    id: data.user.id,
+                    email: data.user.email,
+                    full_name: 'Test Student',
+                    username: 'teststudent',
+                    role: 'student'
+                }));
+                
+            } catch (error) {
+                output.innerHTML = `
+                    <div style="color: red">❌ Login error</div>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        });
+        
+        // Verify account
+        document.getElementById('verifyAccount').addEventListener('click', async () => {
+            const output = document.getElementById('verifyOutput');
+            const email = document.getElementById('email').value;
+            
+            output.innerHTML = 'Verifying account...';
+            
+            try {
+                // Check if profile exists
+                const { data: profileData, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+                
+                if (profileError) {
+                    output.innerHTML = `
+                        <div style="color: red">❌ Profile not found</div>
+                        <pre>${JSON.stringify(profileError, null, 2)}</pre>
+                    `;
+                    return;
+                }
+                
+                output.innerHTML = `
+                    <div style="color: green">✅ Account verified</div>
+                    <pre>${JSON.stringify(profileData, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                output.innerHTML = `
+                    <div style="color: red">❌ Verification error</div>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        });
+    </script>
+</body>
+</html> 

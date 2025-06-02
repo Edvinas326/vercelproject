@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fix Admin Profile</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Administratoriaus profilio taisymas</h1>
+    <p>Šis įrankis atnaujins jūsų administratoriaus profilį dviem būdais:</p>
+    <ol>
+        <li>Atnaujins user_metadata su admin role</li>
+        <li>Atnaujins lokaliai išsaugotą profilių informaciją</li>
+    </ol>
+    
+    <button id="updateMetadataBtn">Atnaujinti vartotojo metaduomenis</button>
+    <button id="updateLocalProfileBtn">Atnaujinti lokalius profilius</button>
+    <button id="showLocalStorageBtn">Parodyti localStorage duomenis</button>
+    
+    <div id="result" class="result"></div>
+
+    <script>
+        // Supabase konfigūracija
+        const SUPABASE_URL = 'https://btlkhjvfgotdspjucqhh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0bGtoanZmZ290ZHNwanVjcWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2NDU4OTIsImV4cCI6MjA2MjIyMTg5Mn0.QRw30CjtxaWrwihv2hmEo9SdvaKKjYQcpeTQwWkq2T4';
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Konstantos localStorage raktams
+        const LOCAL_CURRENT_USER_KEY = 'current_user';
+        const LOCAL_PROFILES_KEY = 'local_profiles';
+        
+        // Vartotojo metaduomenų atnaujinimas
+        document.getElementById('updateMetadataBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Atnaujinami vartotojo metaduomenys...</p>';
+            
+            try {
+                // Patikriname, ar vartotojas prisijungęs
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (!session) {
+                    // Jei vartotojas neprisijungęs, bandome prisijungti
+                    resultDiv.innerHTML += '<p>Vartotojas neprisijungęs. Bandoma prisijungti...</p>';
+                    
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: 'edvinassaulenas1@gmail.com',
+                        password: 'rasimundas5556'
+                    });
+                    
+                    if (error) {
+                        resultDiv.innerHTML += `<p style="color: red">Prisijungimo klaida: ${error.message}</p>`;
+                        return;
+                    }
+                    
+                    resultDiv.innerHTML += '<p style="color: green">Prisijungta sėkmingai!</p>';
+                }
+                
+                // Atnaujinamas vartotojo metadata
+                const { error: updateError } = await supabase.auth.updateUser({
+                    data: { role: 'admin' }
+                });
+                
+                if (updateError) {
+                    resultDiv.innerHTML += `<p style="color: red">Klaida atnaujinant metaduomenis: ${updateError.message}</p>`;
+                    return;
+                }
+                
+                // Gauname atnaujintą sesiją
+                const { data: { session: updatedSession } } = await supabase.auth.getSession();
+                
+                // Išsaugome atnaujintą sesiją localStorage
+                if (updatedSession) {
+                    localStorage.setItem(LOCAL_CURRENT_USER_KEY, JSON.stringify(updatedSession));
+                    resultDiv.innerHTML += '<p style="color: green">Metaduomenys atnaujinti ir sesija išsaugota!</p>';
+                    
+                    // Rodome user_metadata
+                    resultDiv.innerHTML += '<p>Atnaujinti metaduomenys:</p>';
+                    resultDiv.innerHTML += `<pre>${JSON.stringify(updatedSession.user.user_metadata, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML += `<p style="color: red">Netikėta klaida: ${error.message}</p>`;
+            }
+        });
+        
+        // Lokalių profilių atnaujinimas
+        document.getElementById('updateLocalProfileBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Atnaujinama lokalių profilių informacija...</p>';
+            
+            try {
+                // Gauname vartotojo sesiją
+                const sessionStr = localStorage.getItem(LOCAL_CURRENT_USER_KEY);
+                if (!sessionStr) {
+                    resultDiv.innerHTML += '<p style="color: red">Sesija nerasta localStorage. Pirmiausia prisijunkite.</p>';
+                    return;
+                }
+                
+                const session = JSON.parse(sessionStr);
+                const user = session.user;
+                
+                if (!user || !user.id) {
+                    resultDiv.innerHTML += '<p style="color: red">Vartotojo informacija nepilna.</p>';
+                    return;
+                }
+                
+                // Gauname esamus profilius
+                let profiles = JSON.parse(localStorage.getItem(LOCAL_PROFILES_KEY)) || [];
+                
+                // Tikriname, ar vartotojo profilis jau egzistuoja
+                const existingProfileIndex = profiles.findIndex(p => p.id === user.id);
+                
+                // Naujas profilio objektas
+                const updatedProfile = {
+                    id: user.id,
+                    full_name: 'Administratorius',
+                    username: 'admin',
+                    email: user.email,
+                    role: 'admin',
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+                
+                if (existingProfileIndex >= 0) {
+                    // Atnaujiname esamą profilį
+                    profiles[existingProfileIndex] = {
+                        ...profiles[existingProfileIndex],
+                        ...updatedProfile
+                    };
+                    resultDiv.innerHTML += '<p>Esamas profilis atnaujintas.</p>';
+                } else {
+                    // Pridedame naują profilį
+                    profiles.push(updatedProfile);
+                    resultDiv.innerHTML += '<p>Naujas profilis pridėtas.</p>';
+                }
+                
+                // Išsaugome atnaujintus profilius
+                localStorage.setItem(LOCAL_PROFILES_KEY, JSON.stringify(profiles));
+                
+                resultDiv.innerHTML += '<p style="color: green">Lokalūs profiliai atnaujinti sėkmingai!</p>';
+                
+                // Rodome atnaujintą profilį
+                const updatedProfileData = profiles.find(p => p.id === user.id);
+                if (updatedProfileData) {
+                    resultDiv.innerHTML += '<p>Atnaujintas profilis:</p>';
+                    resultDiv.innerHTML += `<pre>${JSON.stringify(updatedProfileData, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML += `<p style="color: red">Klaida: ${error.message}</p>`;
+            }
+        });
+        
+        // localStorage duomenų rodymas
+        document.getElementById('showLocalStorageBtn').addEventListener('click', () => {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h3>localStorage turinys:</h3>';
+            
+            // Rodome current_user
+            const sessionStr = localStorage.getItem(LOCAL_CURRENT_USER_KEY);
+            resultDiv.innerHTML += '<h4>current_user:</h4>';
+            if (sessionStr) {
+                try {
+                    const session = JSON.parse(sessionStr);
+                    resultDiv.innerHTML += `<pre>${JSON.stringify(session, null, 2)}</pre>`;
+                } catch (e) {
+                    resultDiv.innerHTML += `<p>Klaida analizuojant JSON: ${e.message}</p>`;
+                    resultDiv.innerHTML += `<pre>${sessionStr}</pre>`;
+                }
+            } else {
+                resultDiv.innerHTML += '<p>Nėra išsaugotos sesijos</p>';
+            }
+            
+            // Rodome local_profiles
+            const profilesStr = localStorage.getItem(LOCAL_PROFILES_KEY);
+            resultDiv.innerHTML += '<h4>local_profiles:</h4>';
+            if (profilesStr) {
+                try {
+                    const profiles = JSON.parse(profilesStr);
+                    resultDiv.innerHTML += `<pre>${JSON.stringify(profiles, null, 2)}</pre>`;
+                } catch (e) {
+                    resultDiv.innerHTML += `<p>Klaida analizuojant JSON: ${e.message}</p>`;
+                    resultDiv.innerHTML += `<pre>${profilesStr}</pre>`;
+                }
+            } else {
+                resultDiv.innerHTML += '<p>Nėra išsaugotų profilių</p>';
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -35,6 +35,24 @@ const sampleTerms = {
             { code: 'PSYCH201', name: 'Introduction to Psychology', instructor: 'Dr. Freud', credits: 3, grade: 'A (94%)', status: 'Completed' },
             { code: 'ECON101', name: 'Economics 101', instructor: 'Prof. Smith', credits: 3, grade: 'B (84%)', status: 'Completed' }
         ]
+    },
+    'fall2025': {
+        name: 'Fall 2025',
+        gpa: 3.92,
+        courses: [
+            { code: 'MATH101', name: 'Mathematics 101', instructor: 'Dr. Smith', credits: 4, grade: 'A (95%)', status: 'In Progress' },
+            { code: 'CS202', name: 'Computer Science', instructor: 'Prof. Johnson', credits: 3, grade: 'B+ (87%)', status: 'In Progress' },
+            { code: 'ENG210', name: 'English Literature', instructor: 'Dr. Williams', credits: 3, grade: 'A- (92%)', status: 'In Progress' }
+        ]
+    },
+    'spring2025': {
+        name: 'Spring 2025',
+        gpa: 3.75,
+        courses: [
+            { code: 'PHYS101', name: 'Physics 101', instructor: 'Dr. Newton', credits: 4, grade: 'A (96%)', status: 'Completed' },
+            { code: 'HIST202', name: 'History 202', instructor: 'Prof. Adams', credits: 3, grade: 'B (85%)', status: 'Completed' },
+            { code: 'ART101', name: 'Introduction to Art', instructor: 'Ms. Picasso', credits: 2, grade: 'A- (91%)', status: 'Completed' }
+        ]
     }
 };
 

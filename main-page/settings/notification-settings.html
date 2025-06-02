@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pranešimų nustatymai - EduTrack</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+    <!-- Common functions -->
+    <script src="../common.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom styles -->
+    <link rel="stylesheet" type="text/css" href="../main-styles.css">
+    <style>
+        .settings-card {
+            transition: all 0.3s ease;
+        }
+        
+        .settings-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab-active {
+            color: #0ea5e9;
+            border-color: #0ea5e9;
+        }
+        
+        .switch-dot {
+            transition: transform 0.3s ease;
+        }
+        
+        input:checked ~ .switch-bg {
+            background-color: #0ea5e9;
+        }
+        
+        input:checked ~ .switch-bg .switch-dot {
+            transform: translateX(100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <!-- Dark mode script -->
+    <script>
+        if (localStorage.getItem('darkMode') === 'enabled' ||
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
+    <div class="min-h-screen">
+        <!-- Navigation Bar -->
+        <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 fixed w-full top-0 z-50 shadow-sm">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center space-x-4">
+                        <a href="../main-page.html" class="flex items-center space-x-2">
+                            <img src="../assets/favicon.ico" alt="Logotipas" class="w-8 h-8">
+                            <span class="text-xl font-bold text-primary-600 dark:text-primary-400">EduTrack</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Right side navigation items -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Dark Mode Toggle -->
+                        <button id="darkModeToggle" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <!-- Sun Icon (shown in dark mode) -->
+                            <svg class="w-6 h-6 sun-icon" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <!-- Moon Icon (shown in light mode) -->
+                            <svg class="w-6 h-6 moon-icon" style="display: block;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646A9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Back to settings page -->
+                        <a href="./settings.html" class="text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline flex items-center">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Atgal į nustatymus
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="pt-28 pb-8">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Settings Header with Tabs -->
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Pranešimų nustatymai</h1>
+                        
+                        <!-- Tabs -->
+                        <div class="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+                            <a href="./settings.html" class="py-2 px-4 border-b-2 border-transparent text-gray-500 dark:text-gray-400 font-medium text-sm hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap">
+                                Profilio nustatymai
+                            </a>
+                            <a href="./account-settings.html" class="py-2 px-4 border-b-2 border-transparent text-gray-500 dark:text-gray-400 font-medium text-sm hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap">
+                                Paskyros nustatymai
+                            </a>
+                            <a href="./privacy-settings.html" class="py-2 px-4 border-b-2 border-transparent text-gray-500 dark:text-gray-400 font-medium text-sm hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap">
+                                Privatumo nustatymai
+                            </a>
+                            <a href="./notification-settings.html" class="tab-active py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap">
+                                Pranešimų nustatymai
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Notification Settings Content -->
+                    <div class="space-y-6">
+                        <!-- Email Notifications Card -->
+                        <div class="settings-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">El. pašto pranešimai</h2>
+                            
+                            <div class="space-y-6">
+                                <!-- Master Toggle -->
+                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-4">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Visi el. pašto pranešimai</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Įjungti arba išjungti visus el. pašto pranešimus</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only" id="masterEmailToggle" checked>
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Academic Updates -->
+                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-4">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Akademiniai atnaujinimai</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Nauji pažymiai, vidurkio pasikeitimai</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only" id="academicEmailToggle" checked>
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Assignment Deadlines -->
+                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-4">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Užduočių terminai</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Priminimai apie artėjančius terminus</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only" id="deadlinesEmailToggle" checked>
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Account Alerts -->
+                                <div class="flex justify-between items-center pb-2">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Paskyros įspėjimai</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Saugumo perspėjimai, prisijungimai iš naujų įrenginių</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only" id="securityEmailToggle" checked>
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Push Notifications Card -->
+                        <div class="settings-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tiesioginiai pranešimai</h2>
+                            
+                            <div class="space-y-6">
+                                <!-- Master Toggle -->
+                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-4">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Visi tiesioginiai pranešimai</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Įjungti arba išjungti visus tiesioginius pranešimus</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only" id="masterPushToggle" checked>
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Comments and Mentions -->
+                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-4">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Komentarai ir paminėjimai</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Kai kas nors komentuoja jūsų įrašą ar pamini jus</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only" id="commentsPushToggle" checked>
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Calendar Events -->
+                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-4">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Kalendoriaus įvykiai</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Artėjantys įvykiai ir renginiai</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only" id="calendarPushToggle" checked>
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <!-- News and Updates -->
+                                <div class="flex justify-between items-center pb-2">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Naujienos ir atnaujinimai</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Platformos atnaujinimai ir naujienos</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only" id="newsPushToggle">
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Notification Schedule Card -->
+                        <div class="settings-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Pranešimų tvarkaraštis</h2>
+                            
+                            <div class="space-y-6">
+                                <!-- Quiet Hours -->
+                                <div>
+                                    <h3 class="font-medium text-gray-800 dark:text-gray-200 mb-3">Tylos valandos</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Šio laikotarpio metu negausite tiesioginių pranešimų</p>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Pradžia</label>
+                                            <input type="time" id="quietHoursStart" value="22:00" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Pabaiga</label>
+                                            <input type="time" id="quietHoursEnd" value="07:00" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Reminder Frequency -->
+                                <div>
+                                    <h3 class="font-medium text-gray-800 dark:text-gray-200 mb-3">Priminimų dažnumas</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Kaip dažnai norėtumėte gauti priminimus apie užduotis</p>
+                                    
+                                    <select id="reminderFrequency" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white">
+                                        <option value="daily">Kasdien</option>
+                                        <option value="twice-weekly" selected>Du kartus per savaitę</option>
+                                        <option value="weekly">Kartą per savaitę</option>
+                                        <option value="never">Niekada</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Save Button -->
+                    <div class="mt-8 flex justify-end">
+                        <button id="saveNotificationsBtn" class="px-6 py-3 bg-primary-500 dark:bg-primary-600 text-white rounded-lg hover:bg-primary-600 dark:hover:bg-primary-700 transition-colors text-base font-medium flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Išsaugoti pakeitimus
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page specific JS -->
+    <script>
+        // Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const sunIcon = document.querySelector('.sun-icon');
+        const moonIcon = document.querySelector('.moon-icon');
+        
+        function updateDarkModeUI(isDarkMode) {
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            } else {
+                document.documentElement.classList.remove('dark');
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+        }
+        
+        // Check initial state
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        updateDarkModeUI(isDarkMode);
+        
+        // Toggle dark mode with navbar icon
+        darkModeToggle.addEventListener('click', () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            localStorage.setItem('darkMode', isDarkMode ? 'disabled' : 'enabled');
+            updateDarkModeUI(!isDarkMode);
+        });
+        
+        // Master email toggle controls all email toggles
+        const masterEmailToggle = document.getElementById('masterEmailToggle');
+        const emailToggles = [
+            'academicEmailToggle',
+            'deadlinesEmailToggle',
+            'securityEmailToggle'
+        ];
+        
+        masterEmailToggle.addEventListener('change', () => {
+            const isChecked = masterEmailToggle.checked;
+            emailToggles.forEach(id => {
+                const toggle = document.getElementById(id);
+                if (toggle) toggle.checked = isChecked;
+            });
+        });
+        
+        // Master push toggle controls all push toggles
+        const masterPushToggle = document.getElementById('masterPushToggle');
+        const pushToggles = [
+            'commentsPushToggle',
+            'calendarPushToggle',
+            'newsPushToggle'
+        ];
+        
+        masterPushToggle.addEventListener('change', () => {
+            const isChecked = masterPushToggle.checked;
+            pushToggles.forEach(id => {
+                const toggle = document.getElementById(id);
+                if (toggle) toggle.checked = isChecked;
+            });
+        });
+        
+        // Save button
+        const saveButton = document.getElementById('saveNotificationsBtn');
+        saveButton.addEventListener('click', () => {
+            // This would typically save to the database
+            alert('Pranešimų nustatymai išsaugoti!');
+        });
+    </script>
+</body>
+</html> 

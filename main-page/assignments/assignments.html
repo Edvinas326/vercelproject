@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="lt" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Užduotys - EduTrack</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom styles -->
+    <link rel="stylesheet" type="text/css" href="../main-styles.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        if (localStorage.getItem('darkMode') === 'enabled' ||
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body>
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <!-- Navigation Bar -->
+        <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 fixed w-full top-0 z-50 shadow-sm">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Left Side - Logo and Brand -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Pašalintas logotipas ir EduTrack tekstas -->
+                    </div>
+                    <!-- Center - Navigation Links -->
+                    <!-- Pašalintos visos navigacijos nuorodos -->
+                    <!-- Right Side - User Menu and Settings -->
+                    <div class="flex items-center space-x-6">
+                        <!-- Dark Mode Toggle -->
+                        <button id="darkModeToggle" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <!-- Sun Icon (shown in dark mode) -->
+                            <svg class="w-6 h-6" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <!-- Moon Icon (shown in light mode) -->
+                            <svg class="w-6 h-6" style="display: block;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </button>
+                        <!-- Back to Profile -->
+                        <a href="../student/dashboard.html" class="flex items-center text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            <span class="font-medium">Atgal į skydelį</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!-- Add padding to account for fixed navbar -->
+        <div class="pt-24">
+            <div class="container mx-auto px-4">
+                <!-- Page Header -->
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Užduotys</h1>
+                        <p class="text-gray-600 dark:text-gray-400">Peržiūrėkite ir valdykite savo užduotis</p>
+                    </div>
+                </div>
+                <!-- Action Bar -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 mb-6 border border-gray-100 dark:border-gray-700 flex flex-wrap justify-between items-center">
+                    <!-- Left: Stats -->
+                    <div class="flex space-x-6">
+                        <div class="text-center">
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">Laukia</span>
+                            <span id="pendingCount" class="block text-xl font-bold text-primary-600 dark:text-primary-400">0</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">Vykdoma</span>
+                            <span id="progressCount" class="block text-xl font-bold text-blue-600 dark:text-blue-400">0</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">Atlikta</span>
+                            <span id="completedCount" class="block text-xl font-bold text-green-600 dark:text-green-400">0</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-sm text-gray-500 dark:text-gray-400">Pavėluota</span>
+                            <span id="overdueCount" class="block text-xl font-bold text-red-600 dark:text-red-400">0</span>
+                        </div>
+                    </div>
+                    <!-- Right: Filter & Sort -->
+                    <div class="flex space-x-4">
+                        <button id="filterButton" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                            </svg>
+                            <span>Filtruoti</span>
+                        </button>
+                        <button id="sortButton" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+                            </svg>
+                            <span>Rūšiuoti</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Assignments List -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <!-- Assignments List Header -->
+                    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Dabartinės užduotys</h2>
+                    </div>
+                    <!-- Assignments List Content -->
+                    <div id="assignmentsList" class="divide-y divide-gray-200 dark:divide-gray-700 pb-2">
+                        <!-- Assignment items will be dynamically added here -->
+                        <!-- Loading Skeleton -->
+                        <div class="p-6 pt-8 animate-pulse">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                                        <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
+                                    </div>
+                                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mt-2"></div>
+                                    <div class="mt-4 flex items-center space-x-4">
+                                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-4">
+                                    <div class="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                    <div class="h-6 w-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- No Assignments Message (hidden by default) -->
+                <div id="noAssignments" class="hidden bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center mt-6">
+                    <svg class="w-16 h-16 mx-auto text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    <p class="text-gray-500 dark:text-gray-400 mb-2">Užduočių nerasta.</p>
+                    <p class="text-primary-500 dark:text-primary-400 font-medium">Pridėkite naują užduotį norėdami pradėti!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Scripts (placeholder for future logic) -->
+    <script>
+        // Demo assignments data
+        const demoAssignments = [
+            {
+                id: 1,
+                title: "Matematikos namų darbai",
+                description: "Išspręskite algebros lygtis iš 5-6 puslapio",
+                dueDate: "2025-03-25",
+                status: "pending",
+                subject: "Matematika",
+                priority: "high"
+            },
+            {
+                id: 2,
+                title: "Lietuvių kalbos rašinys",
+                description: "Parašykite apmąstymą apie knygą 'Tarp dviejų aušrų'",
+                dueDate: "2025-03-20",
+                status: "in_progress",
+                subject: "Lietuvių kalba",
+                priority: "medium"
+            },
+            {
+                id: 3,
+                title: "Anglų kalbos testas",
+                description: "Pasiruoškite testui apie Present Perfect laiką",
+                dueDate: "2025-03-15",
+                status: "completed",
+                subject: "Anglų kalba",
+                priority: "high"
+            },
+            {
+                id: 4,
+                title: "Istorijos pranešimas",
+                description: "Paruoškite pranešimą apie Lietuvos Didžiąją Kunigaikštystę",
+                dueDate: "2025-03-10",
+                status: "overdue",
+                subject: "Istorija",
+                priority: "medium"
+            }
+        ];
+
+        // Current filter and sort state
+        let currentFilters = {
+            status: 'all',
+            subject: 'all',
+            priority: 'all'
+        };
+        let currentSort = {
+            field: 'dueDate',
+            direction: 'asc'
+        };
+
+        // Function to format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('lt-LT', options);
+        }
+
+        // Function to get status badge HTML
+        function getStatusBadge(status) {
+            const statusConfig = {
+                pending: { text: 'Laukia', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' },
+                in_progress: { text: 'Vykdoma', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' },
+                completed: { text: 'Atlikta', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' },
+                overdue: { text: 'Pavėluota', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' }
+            };
+            const config = statusConfig[status];
+            return `<span class="px-2 py-1 text-xs font-medium rounded-full ${config.color}">${config.text}</span>`;
+        }
+
+        // Function to get priority badge HTML
+        function getPriorityBadge(priority) {
+            const priorityConfig = {
+                high: { text: 'Aukšta', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' },
+                medium: { text: 'Vidutinė', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' },
+                low: { text: 'Žema', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' }
+            };
+            const config = priorityConfig[priority];
+            return `<span class="px-2 py-1 text-xs font-medium rounded-full ${config.color}">${config.text}</span>`;
+        }
+
+        // Function to filter assignments
+        function filterAssignments(assignments) {
+            return assignments.filter(assignment => {
+                if (currentFilters.status !== 'all' && assignment.status !== currentFilters.status) return false;
+                if (currentFilters.subject !== 'all' && assignment.subject !== currentFilters.subject) return false;
+                if (currentFilters.priority !== 'all' && assignment.priority !== currentFilters.priority) return false;
+                return true;
+            });
+        }
+
+        // Function to sort assignments
+        function sortAssignments(assignments) {
+            return [...assignments].sort((a, b) => {
+                let comparison = 0;
+                if (currentSort.field === 'dueDate') {
+                    comparison = new Date(a.dueDate) - new Date(b.dueDate);
+                } else if (currentSort.field === 'title') {
+                    comparison = a.title.localeCompare(b.title);
+                } else if (currentSort.field === 'priority') {
+                    const priorityOrder = { high: 3, medium: 2, low: 1 };
+                    comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
+                }
+                return currentSort.direction === 'asc' ? comparison : -comparison;
+            });
+        }
+
+        // Function to create filter dropdown
+        function createFilterDropdown() {
+            const dropdown = document.createElement('div');
+            dropdown.className = 'absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50';
+            dropdown.innerHTML = `
+                <div class="py-1">
+                    <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 font-medium">Filtruoti pagal:</div>
+                    <div class="px-4 py-2">
+                        <label class="block text-sm text-gray-700 dark:text-gray-200 mb-2">Būsena:</label>
+                        <select id="statusFilter" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            <option value="all">Visos</option>
+                            <option value="pending">Laukia</option>
+                            <option value="in_progress">Vykdoma</option>
+                            <option value="completed">Atlikta</option>
+                            <option value="overdue">Pavėluota</option>
+                        </select>
+                    </div>
+                    <div class="px-4 py-2">
+                        <label class="block text-sm text-gray-700 dark:text-gray-200 mb-2">Dalykas:</label>
+                        <select id="subjectFilter" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            <option value="all">Visi</option>
+                            <option value="Matematika">Matematika</option>
+                            <option value="Lietuvių kalba">Lietuvių kalba</option>
+                            <option value="Anglų kalba">Anglų kalba</option>
+                            <option value="Istorija">Istorija</option>
+                        </select>
+                    </div>
+                    <div class="px-4 py-2">
+                        <label class="block text-sm text-gray-700 dark:text-gray-200 mb-2">Prioritetas:</label>
+                        <select id="priorityFilter" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            <option value="all">Visi</option>
+                            <option value="high">Aukšta</option>
+                            <option value="medium">Vidutinė</option>
+                            <option value="low">Žema</option>
+                        </select>
+                    </div>
+                    <div class="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
+                        <button id="applyFilters" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            Taikyti filtrus
+                        </button>
+                    </div>
+                </div>
+            `;
+            return dropdown;
+        }
+
+        // Function to create sort dropdown
+        function createSortDropdown() {
+            const dropdown = document.createElement('div');
+            dropdown.className = 'absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50';
+            dropdown.innerHTML = `
+                <div class="py-1">
+                    <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 font-medium">Rūšiuoti pagal:</div>
+                    <div class="px-4 py-2">
+                        <select id="sortField" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            <option value="dueDate">Terminas</option>
+                            <option value="title">Pavadinimas</option>
+                            <option value="priority">Prioritetas</option>
+                        </select>
+                    </div>
+                    <div class="px-4 py-2">
+                        <select id="sortDirection" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            <option value="asc">Didėjančia tvarka</option>
+                            <option value="desc">Mažėjančia tvarka</option>
+                        </select>
+                    </div>
+                    <div class="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
+                        <button id="applySort" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            Taikyti rūšiavimą
+                        </button>
+                    </div>
+                </div>
+            `;
+            return dropdown;
+        }
+
+        // Function to render assignments
+        function renderAssignments() {
+            const assignmentsList = document.getElementById('assignmentsList');
+            assignmentsList.innerHTML = '';
+
+            let filteredAssignments = filterAssignments(demoAssignments);
+            let sortedAssignments = sortAssignments(filteredAssignments);
+
+            if (sortedAssignments.length === 0) {
+                document.getElementById('noAssignments').classList.remove('hidden');
+                assignmentsList.classList.add('hidden');
+            } else {
+                document.getElementById('noAssignments').classList.add('hidden');
+                assignmentsList.classList.remove('hidden');
+            }
+
+            sortedAssignments.forEach(assignment => {
+                const assignmentElement = document.createElement('div');
+                assignmentElement.className = 'p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors';
+                assignmentElement.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${assignment.title}</h3>
+                                ${getStatusBadge(assignment.status)}
+                            </div>
+                            <p class="mt-2 text-gray-600 dark:text-gray-400">${assignment.description}</p>
+                            <div class="mt-4 flex items-center space-x-4">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">
+                                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    ${formatDate(assignment.dueDate)}
+                                </span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">
+                                    <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                    </svg>
+                                    ${assignment.subject}
+                                </span>
+                                ${getPriorityBadge(assignment.priority)}
+                            </div>
+                        </div>
+                        <div class="flex space-x-4">
+                            <button class="edit-btn text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors" data-id="${assignment.id}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </button>
+                            <button class="delete-btn text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors" data-id="${assignment.id}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                assignmentsList.appendChild(assignmentElement);
+            });
+
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.dataset.id;
+                    editAssignment(id);
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.dataset.id;
+                    deleteAssignment(id);
+                });
+            });
+
+            // Update stats
+            updateStats();
+        }
+
+        // Function to update stats
+        function updateStats() {
+            const stats = {
+                pending: demoAssignments.filter(a => a.status === 'pending').length,
+                in_progress: demoAssignments.filter(a => a.status === 'in_progress').length,
+                completed: demoAssignments.filter(a => a.status === 'completed').length,
+                overdue: demoAssignments.filter(a => a.status === 'overdue').length
+            };
+
+            document.getElementById('pendingCount').textContent = stats.pending;
+            document.getElementById('progressCount').textContent = stats.in_progress;
+            document.getElementById('completedCount').textContent = stats.completed;
+            document.getElementById('overdueCount').textContent = stats.overdue;
+        }
+
+        // Function to edit assignment
+        function editAssignment(id) {
+            const assignment = demoAssignments.find(a => a.id === parseInt(id));
+            if (!assignment) return;
+
+            // Create modal for editing
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
+            modal.innerHTML = `
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+                    <div class="mt-3">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Redaguoti užduotį</h3>
+                        <form id="editForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pavadinimas</label>
+                                <input type="text" name="title" value="${assignment.title}" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Aprašymas</label>
+                                <textarea name="description" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">${assignment.description}</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Terminas</label>
+                                <input type="date" name="dueDate" value="${assignment.dueDate}" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Būsena</label>
+                                <select name="status" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                    <option value="pending" ${assignment.status === 'pending' ? 'selected' : ''}>Laukia</option>
+                                    <option value="in_progress" ${assignment.status === 'in_progress' ? 'selected' : ''}>Vykdoma</option>
+                                    <option value="completed" ${assignment.status === 'completed' ? 'selected' : ''}>Atlikta</option>
+                                    <option value="overdue" ${assignment.status === 'overdue' ? 'selected' : ''}>Pavėluota</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Prioritetas</label>
+                                <select name="priority" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                    <option value="high" ${assignment.priority === 'high' ? 'selected' : ''}>Aukšta</option>
+                                    <option value="medium" ${assignment.priority === 'medium' ? 'selected' : ''}>Vidutinė</option>
+                                    <option value="low" ${assignment.priority === 'low' ? 'selected' : ''}>Žema</option>
+                                </select>
+                            </div>
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" class="cancel-edit px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500">
+                                    Atšaukti
+                                </button>
+                                <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700">
+                                    Išsaugoti
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            // Handle form submission
+            const form = modal.querySelector('#editForm');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const updatedAssignment = {
+                    ...assignment,
+                    title: formData.get('title'),
+                    description: formData.get('description'),
+                    dueDate: formData.get('dueDate'),
+                    status: formData.get('status'),
+                    priority: formData.get('priority')
+                };
+
+                const index = demoAssignments.findIndex(a => a.id === parseInt(id));
+                demoAssignments[index] = updatedAssignment;
+                renderAssignments();
+                modal.remove();
+            });
+
+            // Handle cancel
+            modal.querySelector('.cancel-edit').addEventListener('click', () => {
+                modal.remove();
+            });
+        }
+
+        // Function to delete assignment
+        function deleteAssignment(id) {
+            if (confirm('Ar tikrai norite ištrinti šią užduotį?')) {
+                const index = demoAssignments.findIndex(a => a.id === parseInt(id));
+                if (index !== -1) {
+                    demoAssignments.splice(index, 1);
+                    renderAssignments();
+                }
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAssignments();
+
+            // Dark mode toggle functionality
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const sunIcon = darkModeToggle.querySelector('svg:first-child');
+            const moonIcon = darkModeToggle.querySelector('svg:last-child');
+
+            darkModeToggle.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+                sunIcon.style.display = isDark ? 'block' : 'none';
+                moonIcon.style.display = isDark ? 'none' : 'block';
+            });
+
+            // Update icon display on page load
+            const isDark = document.documentElement.classList.contains('dark');
+            sunIcon.style.display = isDark ? 'block' : 'none';
+            moonIcon.style.display = isDark ? 'none' : 'block';
+
+            // Filter button functionality
+            const filterButton = document.getElementById('filterButton');
+            let filterDropdown = null;
+
+            filterButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (filterDropdown) {
+                    filterDropdown.remove();
+                    filterDropdown = null;
+                } else {
+                    filterDropdown = createFilterDropdown();
+                    filterButton.parentNode.appendChild(filterDropdown);
+
+                    // Set current filter values
+                    filterDropdown.querySelector('#statusFilter').value = currentFilters.status;
+                    filterDropdown.querySelector('#subjectFilter').value = currentFilters.subject;
+                    filterDropdown.querySelector('#priorityFilter').value = currentFilters.priority;
+
+                    // Handle apply filters
+                    filterDropdown.querySelector('#applyFilters').addEventListener('click', () => {
+                        currentFilters = {
+                            status: filterDropdown.querySelector('#statusFilter').value,
+                            subject: filterDropdown.querySelector('#subjectFilter').value,
+                            priority: filterDropdown.querySelector('#priorityFilter').value
+                        };
+                        renderAssignments();
+                        filterDropdown.remove();
+                        filterDropdown = null;
+                    });
+                }
+            });
+
+            // Sort button functionality
+            const sortButton = document.getElementById('sortButton');
+            let sortDropdown = null;
+
+            sortButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (sortDropdown) {
+                    sortDropdown.remove();
+                    sortDropdown = null;
+                } else {
+                    sortDropdown = createSortDropdown();
+                    sortButton.parentNode.appendChild(sortDropdown);
+
+                    // Set current sort values
+                    sortDropdown.querySelector('#sortField').value = currentSort.field;
+                    sortDropdown.querySelector('#sortDirection').value = currentSort.direction;
+
+                    // Handle apply sort
+                    sortDropdown.querySelector('#applySort').addEventListener('click', () => {
+                        currentSort = {
+                            field: sortDropdown.querySelector('#sortField').value,
+                            direction: sortDropdown.querySelector('#sortDirection').value
+                        };
+                        renderAssignments();
+                        sortDropdown.remove();
+                        sortDropdown = null;
+                    });
+                }
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', () => {
+                if (filterDropdown) {
+                    filterDropdown.remove();
+                    filterDropdown = null;
+                }
+                if (sortDropdown) {
+                    sortDropdown.remove();
+                    sortDropdown = null;
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

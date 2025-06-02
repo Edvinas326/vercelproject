@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="lt" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistemos Nustatymai - Admin Panel</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../main-styles.css">
+    <script src="admin.js" defer></script>
+    <script src="admin-panel.js" defer></script>
+    <script>
+        if (localStorage.getItem('darkMode') === 'enabled' ||
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900">
+    <div class="min-h-screen">
+        <!-- Navigation Bar -->
+        <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 fixed w-full top-0 z-50 shadow-sm">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Right Side - User Menu and Settings -->
+                    <div class="flex items-center space-x-6">
+                        <!-- Dark Mode Toggle -->
+                        <button id="darkModeToggle" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <!-- Sun icon (for dark mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            <!-- Moon icon (for light mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                        </button>
+
+                        <!-- User Menu -->
+                        <div class="relative" id="user-menu">
+                            <button id="user-menu-button" class="flex items-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md px-3 py-2">
+                                <img id="profile-image" class="h-8 w-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Admin&background=red" alt="Admin">
+                                <span id="user-name-display" class="ml-2 mr-1 text-sm font-medium md:block">Administrator</span>
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+
+                            <!-- User Dropdown Menu -->
+                            <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 hidden">
+                                <a href="../settings/settings.html" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Nustatymai</a>
+                                <a href="#" id="signout-button" class="block px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900">Atsijungti</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="pt-24 pb-8">
+            <div class="container mx-auto px-4">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Sistemos Nustatymai</h1>
+                
+                <!-- Dashboard Layout with Sidebar -->
+                <div class="flex flex-col md:flex-row">
+                    <!-- Sidebar Navigation -->
+                    <aside class="hidden md:block md:w-64 mb-6 md:mb-0 md:mr-6">
+                        <nav class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sticky top-24">
+                            <ul class="space-y-2">
+                                <li><a href="admin.html" class="block px-4 py-2 rounded hover:bg-primary-100 dark:hover:bg-primary-900 text-gray-700 dark:text-gray-200 font-medium">Administratoriaus Skydelis</a></li>
+                                <li><a href="users.html" class="block px-4 py-2 rounded hover:bg-primary-100 dark:hover:bg-primary-900 text-gray-700 dark:text-gray-200 font-medium">Vartotojai</a></li>
+                                <li><a href="schools.html" class="block px-4 py-2 rounded hover:bg-primary-100 dark:hover:bg-primary-900 text-gray-700 dark:text-gray-200 font-medium">Mokyklos</a></li>
+                                <li><a href="content.html" class="block px-4 py-2 rounded hover:bg-primary-100 dark:hover:bg-primary-900 text-gray-700 dark:text-gray-200 font-medium">Turinys</a></li>
+                                <li><a href="system.html" class="block px-4 py-2 rounded bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 font-semibold">Sistema</a></li>
+                            </ul>
+                        </nav>
+                    </aside>
+
+                    <!-- Main Content Area -->
+                    <div class="flex-1">
+                        <!-- System Settings -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 p-6 mb-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Sistemos Konfigūracija</h2>
+                            </div>
+
+                            <!-- Settings Form -->
+                            <form class="space-y-6">
+                                <!-- General Settings -->
+                                <div class="space-y-4">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Bendri Nustatymai</h3>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="site-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Svetainės Pavadinimas</label>
+                                            <input type="text" id="site-name" name="site-name" class="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" value="EduTrack">
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="site-url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Svetainės URL</label>
+                                            <input type="url" id="site-url" name="site-url" class="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" value="https://edutrack.example.com">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label for="site-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Svetainės Aprašymas</label>
+                                        <textarea id="site-description" name="site-description" rows="3" class="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">Mokymosi platforma mokykloms ir mokiniams</textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Email Settings -->
+                                <div class="space-y-4">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">El. Pašto Nustatymai</h3>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="smtp-host" class="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Serveris</label>
+                                            <input type="text" id="smtp-host" name="smtp-host" class="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" value="smtp.example.com">
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="smtp-port" class="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Portas</label>
+                                            <input type="number" id="smtp-port" name="smtp-port" class="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" value="587">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="smtp-username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Vartotojo Vardas</label>
+                                            <input type="text" id="smtp-username" name="smtp-username" class="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" value="noreply@example.com">
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="smtp-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">SMTP Slaptažodis</label>
+                                            <input type="password" id="smtp-password" name="smtp-password" class="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" value="********">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Security Settings -->
+                                <div class="space-y-4">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Saugumo Nustatymai</h3>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="session-timeout" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sesijos Laikas (minutėmis)</label>
+                                            <input type="number" id="session-timeout" name="session-timeout" class="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" value="30">
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="max-login-attempts" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Maksimalus Prisijungimo Bandymų Skaičius</label>
+                                            <input type="number" id="max-login-attempts" name="max-login-attempts" class="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" value="5">
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="enable-2fa" name="enable-2fa" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                        <label for="enable-2fa" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">Įjungti dviejų faktorių autentifikaciją</label>
+                                    </div>
+                                </div>
+
+                                <!-- Save Button -->
+                                <div class="flex justify-end">
+                                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                        Išsaugoti Nustatymus
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Modals -->
+    <div id="modals-container"></div>
+    <script>
+        // Load modals
+        fetch('modals.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('modals-container').innerHTML = html;
+            })
+            .catch(error => console.error('Error loading modals:', error));
+    </script>
+</body>
+</html> 

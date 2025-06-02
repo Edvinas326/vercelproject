@@ -27,6 +27,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Initialize post creation
         initializePostCreation(user.id);
         
+        // Check if we need to create demo posts
+        const { data: existingPosts, error: postsError } = await supabase
+            .from('posts')
+            .select('id')
+            .limit(1);
+
+        console.log('Checking for existing posts:', existingPosts);
+
+        // Create demo posts if none exist
+        if (postsError || !existingPosts || existingPosts.length === 0) {
+            console.log('No existing posts found, creating demo posts...');
+            await createSamplePosts(user.id);
+        } else {
+            console.log('Posts already exist, skipping demo creation');
+        }
+        
         // Load posts
         await loadPosts();
 
@@ -89,8 +105,7 @@ function initializePostCreation(userId) {
                 .insert([
                     { 
                         user_id: actualUserId,  
-                        content: content,
-                        category: 'General'
+                        content: content
                     }
                 ])
                 .select();
@@ -108,9 +123,23 @@ function initializePostCreation(userId) {
                 // Get the post container
                 const postsContainer = document.getElementById('posts-container');
                 
-                // If currently showing "no posts" message, clear it
-                if (postsContainer.querySelector('p.text-gray-500')) {
-                    postsContainer.innerHTML = '';
+                // If currently showing "no posts" message, clear it with animation
+                const noPostsMessage = postsContainer.querySelector('p.text-gray-500');
+                if (noPostsMessage) {
+                    const parent = noPostsMessage.closest('.bg-white');
+                    if (parent) {
+                        parent.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                        parent.style.opacity = '0';
+                        parent.style.transform = 'translateY(-20px) scale(0.95)';
+                        parent.style.height = '0';
+                        parent.style.margin = '0';
+                        parent.style.padding = '0';
+                        parent.style.overflow = 'hidden';
+                        
+                        setTimeout(() => {
+                            postsContainer.innerHTML = '';
+                        }, 500);
+                    }
                 }
                 
                 // Get user profile for the post
@@ -168,23 +197,46 @@ function initializePostCreation(userId) {
                 // Create the post element
                 const postElement = createPostElement(newPost, actualUserId);
                 
-                // Add animation class
-                postElement.style.opacity = '0';
-                postElement.style.transform = 'translateY(20px)';
-                postElement.style.transition = 'opacity 0.3s, transform 0.3s';
-                
                 // Add to the beginning of the posts container
                 if (postsContainer.firstChild) {
                     postsContainer.insertBefore(postElement, postsContainer.firstChild);
                 } else {
                     postsContainer.appendChild(postElement);
                 }
+
+                // Show success message with animation
+                const successToast = document.createElement('div');
+                successToast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg z-50 transition-all duration-300 ease-in-out';
+                successToast.style.opacity = '0';
+                successToast.style.transform = 'translateY(20px)';
+                successToast.innerHTML = `
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span>Post created successfully!</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(successToast);
                 
                 // Trigger animation
+                requestAnimationFrame(() => {
+                    successToast.style.opacity = '1';
+                    successToast.style.transform = 'translateY(0)';
+                });
+                
+                // Remove the toast after 3 seconds with fade-out animation
                 setTimeout(() => {
-                    postElement.style.opacity = '1';
-                    postElement.style.transform = 'translateY(0)';
-                }, 10);
+                    successToast.style.opacity = '0';
+                    successToast.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        successToast.remove();
+                    }, 300);
+                }, 3000);
+
+                // Reload all posts to ensure proper order
+                await loadPosts();
             }
             
         } catch (error) {
@@ -217,19 +269,21 @@ async function loadPosts() {
         }
         console.log("Current user ID:", user.id);
 
-        // First, display a loading state
-        postsContainer.innerHTML = `
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center">
-                <div class="animate-pulse flex flex-col items-center">
-                    <div class="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 mb-4"></div>
-                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-2.5"></div>
-                    <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-6"></div>
-                    <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2.5"></div>
-                    <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+        // Only show loading state if there are no posts
+        if (!postsContainer.querySelector('.post-card')) {
+            postsContainer.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center">
+                    <div class="animate-pulse flex flex-col items-center">
+                        <div class="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 mb-4"></div>
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-2.5"></div>
+                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-6"></div>
+                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2.5"></div>
+                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                    </div>
+                    <p class="text-gray-500 dark:text-gray-400 mt-4">Loading posts...</p>
                 </div>
-                <p class="text-gray-500 dark:text-gray-400 mt-4">Loading posts...</p>
-            </div>
-        `;
+            `;
+        }
 
         // Fetch posts with proper ordering
         console.log("Fetching posts from database...");
@@ -244,20 +298,24 @@ async function loadPosts() {
             throw error;
         }
 
-        // Clear existing posts
-        postsContainer.innerHTML = '';
+        // Clear container only if it's the initial load
+        if (!postsContainer.querySelector('.post-card')) {
+            postsContainer.innerHTML = '';
+        }
         
         if (!posts || posts.length === 0) {
             console.log("No posts found");
-            postsContainer.innerHTML = `
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center">
-                    <svg class="w-16 h-16 mx-auto text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                    </svg>
-                    <p class="text-gray-500 dark:text-gray-400 mb-2">No posts yet.</p>
-                    <p class="text-primary-500 dark:text-primary-400 font-medium">Be the first to share something!</p>
-                </div>
-            `;
+            if (!postsContainer.querySelector('.post-card')) {
+                postsContainer.innerHTML = `
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center">
+                        <svg class="w-16 h-16 mx-auto text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <p class="text-gray-500 dark:text-gray-400 mb-2">No posts yet.</p>
+                        <p class="text-primary-500 dark:text-primary-400 font-medium">Be the first to share something!</p>
+                    </div>
+                `;
+            }
             return;
         }
 
@@ -266,6 +324,12 @@ async function loadPosts() {
         // For each post, fetch the corresponding profile
         for (const post of posts) {
             try {
+                // Skip if post already exists in the container
+                if (postsContainer.querySelector(`[data-post-id="${post.id}"]`)) {
+                    console.log(`Post ${post.id} already exists in container, skipping...`);
+                    continue;
+                }
+
                 console.log(`Processing post ${post.id}, user_id: ${post.user_id}`);
                 
                 // First try direct lookup
@@ -278,7 +342,7 @@ async function loadPosts() {
                 if (profileError) {
                     console.log(`Direct profile lookup failed, trying to load all profiles...`);
                     
-                    // Try to get all profiles and find a match - this is inefficient but works for small datasets
+                    // Try to get all profiles and find a match
                     const { data: allProfiles, error: allProfilesError } = await supabase
                         .from('profiles')
                         .select('*')
@@ -335,22 +399,24 @@ async function loadPosts() {
 
     } catch (error) {
         console.error('Error loading posts:', error);
-        postsContainer.innerHTML = `
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center">
-                <svg class="w-16 h-16 mx-auto text-red-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                </svg>
-                <p class="text-red-500 dark:text-red-400 font-medium mb-2">Error loading posts</p>
-                <p class="text-gray-500 dark:text-gray-400">Please refresh the page to try again</p>
-            </div>
-        `;
+        if (!postsContainer.querySelector('.post-card')) {
+            postsContainer.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center">
+                    <svg class="w-16 h-16 mx-auto text-red-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <p class="text-red-500 dark:text-red-400 font-medium mb-2">Error loading posts</p>
+                    <p class="text-gray-500 dark:text-gray-400">Please refresh the page to try again</p>
+                </div>
+            `;
+        }
     }
 }
 
 // Create a post element
 function createPostElement(post, currentUserId) {
     const postEl = document.createElement('div');
-    postEl.className = 'post-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-4 border border-gray-100 dark:border-gray-700';
+    postEl.className = 'post-card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-4 border border-gray-100 dark:border-gray-700 transition-all duration-300 ease-in-out';
     postEl.setAttribute('data-post-id', post.id);
     
     // Use the profile data we fetched separately, with fallbacks for each property
@@ -551,8 +617,21 @@ async function deletePost(postId) {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError) throw userError;
         
-        // Find the post element in the DOM before deleting from database
-        const postElement = document.querySelector(`.post-item[data-post-id="${postId}"]`);
+        // Find the post element in the DOM
+        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
+        if (!postElement) {
+            console.error('Post element not found in DOM');
+            return;
+        }
+        
+        // Add a smooth fade-out animation
+        postElement.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        postElement.style.opacity = '0';
+        postElement.style.transform = 'translateY(-20px) scale(0.95)';
+        postElement.style.marginBottom = '0';
+        postElement.style.padding = '0';
+        postElement.style.height = '0';
+        postElement.style.overflow = 'hidden';
         
         // Perform the delete operation
         const { error } = await supabase
@@ -567,28 +646,65 @@ async function deletePost(postId) {
         
         console.log('Post deleted successfully');
         
-        // Remove the post from the DOM if found
-        if (postElement) {
-            // Add a fade-out animation
-            postElement.style.transition = 'opacity 0.3s, transform 0.3s';
-            postElement.style.opacity = '0';
-            postElement.style.transform = 'translateY(-10px)';
+        // Remove the element after animation completes
+        setTimeout(() => {
+            postElement.remove();
             
-            // Remove the element after animation completes
-            setTimeout(() => {
-                postElement.remove();
+            // If no posts left, show "no posts" message with animation
+            const postsContainer = document.getElementById('posts-container');
+            if (postsContainer && !postsContainer.querySelector('[data-post-id]')) {
+                const noPostsMessage = document.createElement('div');
+                noPostsMessage.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700 text-center transition-all duration-500 ease-in-out';
+                noPostsMessage.style.opacity = '0';
+                noPostsMessage.style.transform = 'translateY(20px)';
+                noPostsMessage.innerHTML = `
+                    <svg class="w-16 h-16 mx-auto text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                    <p class="text-gray-500 dark:text-gray-400 mb-2">No posts yet.</p>
+                    <p class="text-primary-500 dark:text-primary-400 font-medium">Be the first to share something!</p>
+                `;
                 
-                // If no posts left, show "no posts" message
-                const postsContainer = document.getElementById('posts-container');
-                if (postsContainer && !postsContainer.querySelector('.post-item')) {
-                    postsContainer.innerHTML = `
-                        <div class="text-center py-8">
-                            <p class="text-gray-500">No posts yet. Be the first to post!</p>
-                        </div>
-                    `;
-                }
-            }, 300);
-        }
+                postsContainer.appendChild(noPostsMessage);
+                
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    noPostsMessage.style.opacity = '1';
+                    noPostsMessage.style.transform = 'translateY(0)';
+                });
+            }
+
+            // Show success message with animation
+            const successToast = document.createElement('div');
+            successToast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg z-50 transition-all duration-300 ease-in-out';
+            successToast.style.opacity = '0';
+            successToast.style.transform = 'translateY(20px)';
+            successToast.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span>Post deleted successfully!</span>
+                </div>
+            `;
+            
+            document.body.appendChild(successToast);
+            
+            // Trigger animation
+            requestAnimationFrame(() => {
+                successToast.style.opacity = '1';
+                successToast.style.transform = 'translateY(0)';
+            });
+            
+            // Remove the toast after 3 seconds with fade-out animation
+            setTimeout(() => {
+                successToast.style.opacity = '0';
+                successToast.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    successToast.remove();
+                }, 300);
+            }, 3000);
+        }, 500);
         
     } catch (error) {
         console.error('Error deleting post:', error);
@@ -989,6 +1105,106 @@ async function reportPost(postId) {
             submitBtn.textContent = originalText;
         }
     });
+}
+
+// Create sample posts
+async function createSamplePosts(userId) {
+    console.log('Starting to create sample posts for user:', userId);
+    
+    // Create sample posts using the current user's ID
+    const samplePosts = [
+        {
+            content: "Sveiki! Šiandien puiki diena mokytis. Kas jūsų nuomone, kokia yra geriausia mokymosi strategija? 🤔",
+            created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString() // 2 days ago
+        },
+        {
+            content: "Naujas mokslo metų pradžia! Ar kas nors norėtų dalyvauti mokslo projekte apie aplinkos apsaugą? 🌍",
+            created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString() // 1 day ago
+        },
+        {
+            content: "Prisiminkime, kad rytoj yra matematikos testas. Ar kas norėtų susitikti bibliotekoje ir kartu pasiruošti? 📚",
+            created_at: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString() // 12 hours ago
+        },
+        {
+            content: "Puikūs naujienos! Mūsų mokyklos komanda laimėjo regioninę olimpiadą! 🎉",
+            created_at: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString() // 6 hours ago
+        },
+        {
+            content: "Ar kas nors žino, kur galima rasti gerų mokymosi resursų anglų kalbai? 🌐",
+            created_at: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString() // 3 hours ago
+        },
+        {
+            content: "Šiandien pristatysiu naują mokymosi metodą - projektinį mokymąsi. Ar kas nors norėtų išbandyti? 🎯",
+            created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() // 2 hours ago
+        },
+        {
+            content: "Puikūs pasiekimai šiandien matematikos pamokoje! Visi gerai atliko užduotis. 🌟",
+            created_at: new Date(Date.now() - 1000 * 60 * 60).toISOString() // 1 hour ago
+        },
+        {
+            content: "Ar kas nors norėtų dalyvauti mokyklos krepšinio komandoje? Reikia naujų narių! 🏀",
+            created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString() // 30 minutes ago
+        },
+        {
+            content: "Šiandien pradėjau mokytis programavimo. Ar kas nors galėtų patarti, nuo ko pradėti? 💻",
+            created_at: new Date(Date.now() - 1000 * 60 * 15).toISOString() // 15 minutes ago
+        },
+        {
+            content: "Pranešimas mokytojams: rytoj bus mokytojų tarybos posėdis 15:00 val. 📢",
+            created_at: new Date().toISOString() // Just now
+        }
+    ];
+
+    try {
+        console.log('Attempting to create posts...');
+        
+        // Create all posts in a single batch
+        const { data, error } = await supabase
+            .from('posts')
+            .insert(
+                samplePosts.map(post => ({
+                    user_id: userId,
+                    content: post.content,
+                    created_at: post.created_at
+                }))
+            )
+            .select();
+
+        if (error) {
+            console.error('Error creating sample posts:', error);
+            return;
+        }
+
+        console.log('Sample posts created successfully:', data);
+        
+        // Force a refresh of the posts display
+        await loadPosts();
+        
+        // Show success message
+        const successToast = document.createElement('div');
+        successToast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg z-50';
+        successToast.innerHTML = `
+            <div class="flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Demo posts created successfully!</span>
+            </div>
+        `;
+        
+        document.body.appendChild(successToast);
+        
+        // Remove the toast after 3 seconds
+        setTimeout(() => {
+            successToast.classList.add('fade-out');
+            setTimeout(() => {
+                successToast.remove();
+            }, 300);
+        }, 3000);
+        
+    } catch (error) {
+        console.error('Error in createSamplePosts:', error);
+    }
 }
 
 // Export functions that might be needed elsewhere

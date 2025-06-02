@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="lt" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mokiniai - Mokytojo EduTrack</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom styles -->
+    <link rel="stylesheet" type="text/css" href="../main-styles.css">
+    <!-- Dark mode script -->
+    <script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.getItem('darkMode') === 'enabled' ||
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900">
+    <div class="min-h-screen">
+        <!-- Navigation Bar -->
+        <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 fixed w-full top-0 z-50 shadow-sm">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Center - Navigation Links -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="../main-page.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium"></a>
+                        <a href="../courses/courses.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium"></a>
+                        <a href="../homework/homework.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium"></a>
+                        <a href="../resources/resources.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium"></a>
+                    </div>
+
+                    <!-- Right Side - User Menu and Settings -->
+                    <div class="flex items-center space-x-6">
+                        <!-- Dark Mode Toggle -->
+                        <button id="darkModeToggle" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <!-- Sun icon (for dark mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            <!-- Moon icon (for light mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                        </button>
+
+                        <!-- Atsijungti Button -->
+                        <a href="../../login page/login.html" class="text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 flex items-center">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Atsijungti
+                        </a>
+
+                        <!-- User Menu -->
+                        <div class="relative" id="user-menu">
+                            <button id="user-menu-button" class="flex items-center text-gray-700 dark:text-gray-300">
+                                <img id="profile-image" class="h-8 w-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name=User&background=random" alt="User">
+                                <span id="user-name-display" class="ml-2 mr-1 text-sm font-medium hidden md:block">Vartotojas</span>
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+
+                            <!-- User Dropdown Menu -->
+                            <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 hidden">
+                                <a href="../settings/settings.html" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Nustatymai</a>
+                                <a href="#" id="signout-button" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Atsijungti</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="pt-24 pb-8">
+            <div class="container mx-auto px-4">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Mokiniai</h1>
+                
+                <!-- Dashboard Layout with Sidebar -->
+                <div class="flex flex-col md:flex-row">
+                    <!-- Left Side Navigation Sidebar -->
+                    <div class="w-full md:w-64 mb-6 md:mb-0 md:mr-6">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden sticky top-24">
+                            <!-- Teacher Profile Summary -->
+                            <div class="p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                                <div class="flex items-center space-x-3">
+                                    <img id="sidebar-profile-image" class="h-12 w-12 rounded-full border-2 border-white" 
+                                         src="https://ui-avatars.com/api/?name=Teacher&background=random" alt="Teacher">
+                                    <div>
+                                        <h3 class="font-bold">Mokytojas</h3>
+                                        <p class="text-sm text-blue-100">Matematikos mokytojas</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Navigation Menu -->
+                            <nav class="p-2">
+                                <div class="space-y-1">
+                                    <!-- Dashboard -->
+                                    <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                        </svg>
+                                        Skydelis
+                                    </a>
+                                    
+                                    <!-- Students -->
+                                    <a href="students.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                        </svg>
+                                        Mokiniai
+                                    </a>
+                                    
+                                    <!-- Classes -->
+                                    <a href="classes.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                        Klasės
+                                    </a>
+                                    
+                                    <!-- Assignments -->
+                                    <a href="assignments.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                        </svg>
+                                        Namų darbų vertinimo puslapis
+                                    </a>
+                                    
+                                    <!-- Calendar -->
+                                    <a href="calendar.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Kalendorius
+                                    </a>
+                                    
+                                    <!-- Reports -->
+                                    <a href="reports.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Ataskaitos
+                                    </a>
+                                </div>
+                                
+                                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                    <h3 class="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nuorodos</h3>
+                                    <div class="mt-3 space-y-1">
+                                        <a href="../main-page.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                            </svg>
+                                            Į pagrindinį
+                                        </a>
+                                        <a href="../settings/settings.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                            Nustatymai
+                                        </a>
+                                    </div>
+                                </div>
+                            </nav>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Content Area -->
+                    <div class="flex-1">
+                        <!-- Search and Filter Bar -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6">
+                            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                                <div class="flex-1">
+                                    <div class="relative">
+                                        <input type="text" class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Ieškoti mokinių...">
+                                        <div class="absolute left-3 top-2.5 text-gray-400">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-4">
+                                    <select id="classFilter" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                        <option value="">Visos klasės</option>
+                                        <option value="9">9 klasė</option>
+                                        <option value="10">10 klasė</option>
+                                        <option value="11">11 klasė</option>
+                                        <option value="12">12 klasė</option>
+                                    </select>
+                                    <button id="filterButton" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                                        Filtruoti
+                                    </button>
+                                    <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center" id="addStudentButton">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Pridėti mokinį
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Students List -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                Mokinys
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                Klasė
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                El. paštas
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                Vidurkis
+                                            </th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                Veiksmai
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                        <!-- Student 1 -->
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0 h-10 w-10">
+                                                        <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Jonas+Jonaitis&background=random" alt="">
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            Jonas Jonaitis
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900 dark:text-white">10B</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900 dark:text-white">jonas.jonaitis@example.com</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                    9.2
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-3">
+                                                    <button onclick="viewStudent(${index})" class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300">Peržiūrėti</button>
+                                                    <button onclick="editStudent(${index})" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300">Redaguoti</button>
+                                                    <button onclick="confirmDeleteStudent(${index})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Ištrinti</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        
+                                        <!-- Student 2 -->
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0 h-10 w-10">
+                                                        <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Petras+Petraitis&background=random" alt="">
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            Petras Petraitis
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900 dark:text-white">9A</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900 dark:text-white">petras.petraitis@example.com</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                                    7.8
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-3">
+                                                    <button onclick="viewStudent(${index})" class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300">Peržiūrėti</button>
+                                                    <button onclick="editStudent(${index})" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300">Redaguoti</button>
+                                                    <button onclick="confirmDeleteStudent(${index})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Ištrinti</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        
+                                        <!-- Add more students -->
+                                        <!-- Student 3 -->
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="flex-shrink-0 h-10 w-10">
+                                                        <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Ona+Onaitė&background=random" alt="">
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            Ona Onaitė
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900 dark:text-white">11C</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900 dark:text-white">ona.onaite@example.com</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                    9.6
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-3">
+                                                    <button onclick="viewStudent(${index})" class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300">Peržiūrėti</button>
+                                                    <button onclick="editStudent(${index})" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300">Redaguoti</button>
+                                                    <button onclick="confirmDeleteStudent(${index})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Ištrinti</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
+                                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-700 dark:text-gray-300">
+                                            Rodoma <span class="font-medium">1</span> iki <span class="font-medium">10</span> iš <span class="font-medium">25</span> mokinių
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                                <span class="sr-only">Ankstesnis</span>
+                                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            </a>
+                                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-blue-50 dark:bg-blue-900 text-sm font-medium text-blue-700 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-800">
+                                                1
+                                            </a>
+                                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                                2
+                                            </a>
+                                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                                3
+                                            </a>
+                                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                                <span class="sr-only">Kitas</span>
+                                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            </a>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Pridėti naują mokinį</h3>
+                <button id="closeAddStudentModal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <form id="addStudentForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vardas</label>
+                        <input type="text" id="firstName" name="firstName" required
+                            class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                    </div>
+                    <div>
+                        <label for="lastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pavardė</label>
+                        <input type="text" id="lastName" name="lastName" required
+                            class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">El. paštas</label>
+                    <input type="email" id="email" name="email" required
+                        class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                </div>
+                <div>
+                    <label for="class" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Klasė</label>
+                    <select id="class" name="class" required
+                        class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                        <option value="">Pasirinkite klasę</option>
+                        <option value="9A">9A</option>
+                        <option value="9B">9B</option>
+                        <option value="10A">10A</option>
+                        <option value="10B">10B</option>
+                        <option value="11A">11A</option>
+                        <option value="11B">11B</option>
+                        <option value="12A">12A</option>
+                        <option value="12B">12B</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="grade" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vidutinis pažymys</label>
+                        <input type="number" id="grade" name="grade" min="0" max="10" step="0.1" required
+                            class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                    </div>
+                    <div>
+                        <label for="attendance" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Lankomumas (%)</label>
+                        <input type="number" id="attendance" name="attendance" min="0" max="100" required
+                            class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="cancelAddStudent" 
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        Atšaukti
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        Pridėti mokinį
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Student Modal -->
+    <div id="viewStudentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Mokinio informacija</h3>
+                <button id="closeViewModal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="studentDetails" class="space-y-4">
+                <!-- Student details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div id="editStudentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Redaguoti mokinį</h3>
+                <button id="closeEditModal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <form id="editStudentForm" class="space-y-4">
+                <input type="hidden" id="editStudentIndex">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="editFirstName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vardas</label>
+                        <input type="text" id="editFirstName" name="firstName" required
+                            class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                    </div>
+                    <div>
+                        <label for="editLastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pavardė</label>
+                        <input type="text" id="editLastName" name="lastName" required
+                            class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="editEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300">El. paštas</label>
+                    <input type="email" id="editEmail" name="email" required
+                        class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                </div>
+                <div>
+                    <label for="editClass" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Klasė</label>
+                    <select id="editClass" name="class" required
+                        class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                        <option value="">Pasirinkite klasę</option>
+                        <option value="9A">9A</option>
+                        <option value="9B">9B</option>
+                        <option value="10A">10A</option>
+                        <option value="10B">10B</option>
+                        <option value="11A">11A</option>
+                        <option value="11B">11B</option>
+                        <option value="12A">12A</option>
+                        <option value="12B">12B</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="editGrade" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vidutinis pažymys</label>
+                        <input type="number" id="editGrade" name="grade" min="0" max="10" step="0.1" required
+                            class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                    </div>
+                    <div>
+                        <label for="editAttendance" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Lankomumas (%)</label>
+                        <input type="number" id="editAttendance" name="attendance" min="0" max="100" required
+                            class="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="cancelEdit" 
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        Atšaukti
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        Išsaugoti
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Patvirtinti ištrynimą</h3>
+                <button onclick="hideDeleteConfirmModal()" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="mb-6">
+                <p class="text-gray-700 dark:text-gray-300">Ar tikrai norite ištrinti šį mokinį? Šis veiksmas negali būti atšauktas.</p>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button onclick="hideDeleteConfirmModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
+                    Atšaukti
+                </button>
+                <button id="confirmDeleteBtn" class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Ištrinti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="deleteSuccessMessage" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-full opacity-0 transition-all duration-300">
+        Mokinys sėkmingai ištrintas!
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase
+    </script>
+    
+    <!-- Custom Scripts -->
+    <script src="./dashboard.js"></script>
+    <script src="../main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('addStudentModal');
+            const addButton = document.getElementById('addStudentButton');
+            const closeButton = document.getElementById('closeAddStudentModal');
+            const cancelButton = document.getElementById('cancelAddStudent');
+            const form = document.getElementById('addStudentForm');
+            const studentsTable = document.querySelector('table tbody');
+            const classFilter = document.getElementById('classFilter');
+            const filterButton = document.getElementById('filterButton');
+            const searchInput = document.querySelector('input[type="text"]');
+
+            // Store all students for filtering
+            let allStudents = [];
+
+            // Load students from localStorage
+            function loadStudents() {
+                const savedStudents = localStorage.getItem('students');
+                if (savedStudents) {
+                    allStudents = JSON.parse(savedStudents);
+                    displayStudents(allStudents);
+                }
+            }
+
+            // Display students in the table
+            function displayStudents(students) {
+                // Clear existing table rows
+                while (studentsTable.firstChild) {
+                    studentsTable.removeChild(studentsTable.firstChild);
+                }
+                // Add each student to the table
+                students.forEach((student, index) => {
+                    const row = createStudentRow(student, index);
+                    studentsTable.appendChild(row);
+                });
+                updateStudentCount(students.length);
+            }
+
+            // Filter students based on selected class and search term
+            function filterStudents() {
+                const selectedClass = classFilter.value;
+                const searchTerm = searchInput.value.toLowerCase();
+
+                let filteredStudents = allStudents;
+
+                // Filter by class if not "Visos klasės"
+                if (selectedClass) {
+                    filteredStudents = filteredStudents.filter(student => 
+                        student.class.startsWith(selectedClass) // This will match "9A", "9B", etc. when "9" is selected
+                    );
+                }
+
+                // Filter by search term if any
+                if (searchTerm) {
+                    filteredStudents = filteredStudents.filter(student => 
+                        student.firstName.toLowerCase().includes(searchTerm) ||
+                        student.lastName.toLowerCase().includes(searchTerm) ||
+                        student.email.toLowerCase().includes(searchTerm)
+                    );
+                }
+
+                displayStudents(filteredStudents);
+            }
+
+            // Function to update class data when student data changes
+            function updateClassData() {
+                const classesData = JSON.parse(localStorage.getItem('classesData') || '{}');
+                
+                // Reset student counts and recalculate averages
+                Object.keys(classesData).forEach(className => {
+                    classesData[className].studentCount = 0;
+                    classesData[className].students = [];
+                    classesData[className].averageGrade = 0;
+                    classesData[className].attendance = 0;
+                });
+
+                // Update class data based on current students
+                allStudents.forEach(student => {
+                    const className = student.class;
+                    if (classesData[className]) {
+                        // Increment student count
+                        classesData[className].studentCount++;
+                        
+                        // Add student to class list with their actual grade and attendance
+                        classesData[className].students.push({
+                            name: `${student.firstName} ${student.lastName}`,
+                            grade: parseFloat(student.grade) || 0,
+                            attendance: parseInt(student.attendance) || 0
+                        });
+                    }
+                });
+
+                // Calculate class statistics
+                Object.keys(classesData).forEach(className => {
+                    const classStudents = classesData[className].students;
+                    if (classStudents.length > 0) {
+                        // Calculate average grade
+                        const totalGrade = classStudents.reduce((sum, student) => sum + (parseFloat(student.grade) || 0), 0);
+                        classesData[className].averageGrade = parseFloat((totalGrade / classStudents.length).toFixed(1));
+
+                        // Calculate average attendance
+                        const totalAttendance = classStudents.reduce((sum, student) => sum + (parseInt(student.attendance) || 0), 0);
+                        classesData[className].attendance = Math.round(totalAttendance / classStudents.length);
+                    }
+                });
+
+                // Save updated class data
+                localStorage.setItem('classesData', JSON.stringify(classesData));
+            }
+
+            // Update saveStudents function to also update class data
+            function saveStudents(students) {
+                localStorage.setItem('students', JSON.stringify(students));
+                allStudents = students;
+                updateClassData(); // Update class data whenever students are saved
+            }
+
+            // Get all current students from the table
+            function getAllStudents() {
+                const students = [];
+                const rows = studentsTable.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const nameCell = row.querySelector('.text-sm.font-medium');
+                    const classCell = row.querySelector('td:nth-child(2) .text-sm');
+                    const emailCell = row.querySelector('td:nth-child(3) .text-sm');
+                    
+                    if (nameCell && classCell && emailCell) {
+                        const [firstName, lastName] = nameCell.textContent.trim().split(' ');
+                        students.push({
+                            firstName,
+                            lastName,
+                            class: classCell.textContent.trim(),
+                            email: emailCell.textContent.trim()
+                        });
+                    }
+                });
+                return students;
+            }
+
+            // Update student count in pagination
+            function updateStudentCount(count) {
+                const countText = document.querySelector('.text-sm.text-gray-700.dark\\:text-gray-300');
+                if (countText) {
+                    const newText = `Rodoma <span class="font-medium">1</span> iki <span class="font-medium">${count}</span> iš <span class="font-medium">${count}</span> mokinių`;
+                    countText.innerHTML = newText;
+                }
+            }
+
+            // Function to create a new student row
+            function createStudentRow(studentData, index) {
+                const row = document.createElement('tr');
+                row.className = 'bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700';
+                
+                // Generate random avatar background color
+                const randomColor = Math.floor(Math.random()*16777215).toString(16);
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <img class="h-10 w-10 rounded-full" 
+                                     src="https://ui-avatars.com/api/?name=${encodeURIComponent(studentData.firstName + '+' + studentData.lastName)}&background=${randomColor}" 
+                                     alt="${studentData.firstName} ${studentData.lastName}">
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                    ${studentData.firstName} ${studentData.lastName}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900 dark:text-white">${studentData.class}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900 dark:text-white">${studentData.email}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            ${parseFloat(studentData.grade || 0).toFixed(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-3">
+                            <button onclick="viewStudent(${index})" class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300">Peržiūrėti</button>
+                            <button onclick="editStudent(${index})" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300">Redaguoti</button>
+                            <button onclick="confirmDeleteStudent(${index})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Ištrinti</button>
+                        </div>
+                    </td>
+                `;
+                
+                return row;
+            }
+
+            // View Student Modal Functions
+            window.viewStudent = function(index) {
+                const student = allStudents[index];
+                const modal = document.getElementById('viewStudentModal');
+                const details = document.getElementById('studentDetails');
+                
+                details.innerHTML = `
+                    <div class="flex items-center space-x-4 mb-6">
+                        <img class="h-16 w-16 rounded-full" 
+                             src="https://ui-avatars.com/api/?name=${encodeURIComponent(student.firstName + '+' + student.lastName)}&size=128" 
+                             alt="${student.firstName} ${student.lastName}">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white">${student.firstName} ${student.lastName}</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">${student.class}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h5 class="text-sm font-medium text-gray-500 dark:text-gray-400">El. paštas</h5>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-white">${student.email}</p>
+                        </div>
+                        <div>
+                            <h5 class="text-sm font-medium text-gray-500 dark:text-gray-400">Klasė</h5>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-white">${student.class}</p>
+                        </div>
+                        <div>
+                            <h5 class="text-sm font-medium text-gray-500 dark:text-gray-400">Vidutinis pažymys</h5>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-white">${parseFloat(student.grade || 0).toFixed(1)}</p>
+                        </div>
+                        <div>
+                            <h5 class="text-sm font-medium text-gray-500 dark:text-gray-400">Lankomumas</h5>
+                            <p class="mt-1 text-sm text-gray-900 dark:text-white">${parseInt(student.attendance || 0)}%</p>
+                        </div>
+                    </div>
+                `;
+                
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            };
+
+            // Edit Student Modal Functions
+            window.editStudent = function(index) {
+                const student = allStudents[index];
+                const modal = document.getElementById('editStudentModal');
+                const form = document.getElementById('editStudentForm');
+                
+                // Set form values
+                document.getElementById('editStudentIndex').value = index;
+                document.getElementById('editFirstName').value = student.firstName;
+                document.getElementById('editLastName').value = student.lastName;
+                document.getElementById('editEmail').value = student.email;
+                document.getElementById('editClass').value = student.class;
+                document.getElementById('editGrade').value = student.grade || 0;
+                document.getElementById('editAttendance').value = student.attendance || 0;
+                
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            };
+
+            // Close View Modal
+            document.getElementById('closeViewModal').addEventListener('click', () => {
+                document.getElementById('viewStudentModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            });
+
+            // Close Edit Modal
+            document.getElementById('closeEditModal').addEventListener('click', () => {
+                document.getElementById('editStudentModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            });
+
+            // Cancel Edit
+            document.getElementById('cancelEdit').addEventListener('click', () => {
+                document.getElementById('editStudentModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            });
+
+            // Handle Edit Form Submission
+            document.getElementById('editStudentForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const index = parseInt(document.getElementById('editStudentIndex').value);
+                const updatedStudent = {
+                    firstName: document.getElementById('editFirstName').value,
+                    lastName: document.getElementById('editLastName').value,
+                    email: document.getElementById('editEmail').value,
+                    class: document.getElementById('editClass').value,
+                    grade: parseFloat(document.getElementById('editGrade').value) || 0,
+                    attendance: parseInt(document.getElementById('editAttendance').value) || 0
+                };
+
+                // Check if new class exists
+                const classesData = JSON.parse(localStorage.getItem('classesData') || '{}');
+                if (!classesData[updatedStudent.class]) {
+                    alert('Pasirinkta klasė neegzistuoja. Prašome pirmiausia sukurti klasę.');
+                    return;
+                }
+
+                // Update student in the array
+                allStudents[index] = updatedStudent;
+                
+                // Save to localStorage and update class data
+                saveStudents(allStudents);
+                
+                // Update display
+                filterStudents();
+                
+                // Close modal
+                document.getElementById('editStudentModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                
+                // Show success message
+                alert('Mokinio informacija sėkmingai atnaujinta!');
+            });
+
+            // Close modals when clicking outside
+            [document.getElementById('viewStudentModal'), document.getElementById('editStudentModal')].forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            });
+
+            // Close modals when pressing Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.getElementById('viewStudentModal').classList.add('hidden');
+                    document.getElementById('editStudentModal').classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+
+            // Add event listeners for filtering
+            filterButton.addEventListener('click', filterStudents);
+            
+            // Add event listener for search input
+            searchInput.addEventListener('input', filterStudents);
+
+            // Add event listener for class filter
+            classFilter.addEventListener('change', () => {
+                // Don't filter automatically on change, wait for filter button click
+            });
+
+            // Open modal with debug logging
+            addButton.addEventListener('click', (e) => {
+                console.log('Add button clicked');
+                e.preventDefault();
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    console.error('Modal element not found!');
+                }
+            });
+
+            // Close modal functions
+            function closeModal() {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                form.reset();
+            }
+
+            closeButton.addEventListener('click', closeModal);
+            cancelButton.addEventListener('click', closeModal);
+
+            // Handle form submission
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                try {
+                    // Get form data
+                    const formData = {
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        email: document.getElementById('email').value,
+                        class: document.getElementById('class').value,
+                        grade: parseFloat(document.getElementById('grade').value) || 0,
+                        attendance: parseInt(document.getElementById('attendance').value) || 0
+                    };
+
+                    // Check if class exists in classesData
+                    const classesData = JSON.parse(localStorage.getItem('classesData') || '{}');
+                    if (!classesData[formData.class]) {
+                        alert('Pasirinkta klasė neegzistuoja. Prašome pirmiausia sukurti klasę.');
+                        return;
+                    }
+
+                    // Add new student to allStudents array
+                    allStudents.unshift(formData);
+                    
+                    // Save to localStorage and update class data
+                    saveStudents(allStudents);
+                    
+                    // Apply current filters
+                    filterStudents();
+
+                    // Close modal and show success message
+                    closeModal();
+                    alert('Mokinys sėkmingai pridėtas!');
+                } catch (error) {
+                    console.error('Error adding new student:', error);
+                    alert('Įvyko klaida pridedant mokinį. Bandykite dar kartą.');
+                }
+            });
+
+            // Delete Student Functions
+            let studentToDelete = null;
+
+            window.confirmDeleteStudent = function(index) {
+                studentToDelete = index;
+                const modal = document.getElementById('deleteConfirmModal');
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            };
+
+            window.hideDeleteConfirmModal = function() {
+                const modal = document.getElementById('deleteConfirmModal');
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                studentToDelete = null;
+            };
+
+            // Confirm Delete Button Click Handler
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            if (confirmDeleteBtn) {
+                confirmDeleteBtn.addEventListener('click', () => {
+                    if (studentToDelete !== null) {
+                        // Remove student from array
+                        allStudents.splice(studentToDelete, 1);
+                        
+                        // Save updated students list and update class data
+                        saveStudents(allStudents);
+                        
+                        // Update display
+                        displayStudents(allStudents);
+                        
+                        // Hide modal
+                        hideDeleteConfirmModal();
+                        
+                        // Show success message
+                        const successMessage = document.getElementById('deleteSuccessMessage');
+                        if (successMessage) {
+                            successMessage.style.transform = 'translateY(0)';
+                            successMessage.style.opacity = '1';
+                            setTimeout(() => {
+                                successMessage.style.transform = 'translateY(100%)';
+                                successMessage.style.opacity = '0';
+                            }, 3000);
+                        }
+                    }
+                });
+            }
+
+            // Close delete modal when clicking outside
+            const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+            if (deleteConfirmModal) {
+                deleteConfirmModal.addEventListener('click', (e) => {
+                    if (e.target === deleteConfirmModal) {
+                        hideDeleteConfirmModal();
+                    }
+                });
+            }
+
+            // Close delete modal with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && deleteConfirmModal && !deleteConfirmModal.classList.contains('hidden')) {
+                    hideDeleteConfirmModal();
+                }
+            });
+
+            // Load initial students
+            loadStudents();
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privatumo nustatymai - EduTrack</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+    <!-- Common functions -->
+    <script src="../common.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom styles -->
+    <link rel="stylesheet" type="text/css" href="../main-styles.css">
+    <style>
+        .settings-card {
+            transition: all 0.3s ease;
+        }
+        
+        .settings-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab-active {
+            color: #0ea5e9;
+            border-color: #0ea5e9;
+        }
+        
+        .switch-dot {
+            transition: transform 0.3s ease;
+        }
+        
+        input:checked ~ .switch-bg {
+            background-color: #0ea5e9;
+        }
+        
+        input:checked ~ .switch-bg .switch-dot {
+            transform: translateX(100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <!-- Dark mode script -->
+    <script>
+        if (localStorage.getItem('darkMode') === 'enabled' ||
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
+    <div class="min-h-screen">
+        <!-- Navigation Bar -->
+        <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 fixed w-full top-0 z-50 shadow-sm">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center space-x-4">
+                        <a href="../main-page.html" class="flex items-center space-x-2">
+                            <img src="../assets/favicon.ico" alt="Logotipas" class="w-8 h-8">
+                            <span class="text-xl font-bold text-primary-600 dark:text-primary-400">EduTrack</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Right side navigation items -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Dark Mode Toggle -->
+                        <button id="darkModeToggle" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <!-- Sun Icon (shown in dark mode) -->
+                            <svg class="w-6 h-6 sun-icon" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <!-- Moon Icon (shown in light mode) -->
+                            <svg class="w-6 h-6 moon-icon" style="display: block;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646A9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Back to settings page -->
+                        <a href="./settings.html" class="text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline flex items-center">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Atgal į nustatymus
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="pt-28 pb-8">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Settings Header with Tabs -->
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Privatumo nustatymai</h1>
+                        
+                        <!-- Tabs -->
+                        <div class="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+                            <a href="./settings.html" class="py-2 px-4 border-b-2 border-transparent text-gray-500 dark:text-gray-400 font-medium text-sm hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap">
+                                Profilio nustatymai
+                            </a>
+                            <a href="./account-settings.html" class="py-2 px-4 border-b-2 border-transparent text-gray-500 dark:text-gray-400 font-medium text-sm hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap">
+                                Paskyros nustatymai
+                            </a>
+                            <a href="./privacy-settings.html" class="tab-active py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap">
+                                Privatumo nustatymai
+                            </a>
+                            <a href="./notification-settings.html" class="py-2 px-4 border-b-2 border-transparent text-gray-500 dark:text-gray-400 font-medium text-sm hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap">
+                                Pranešimų nustatymai
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Privacy Settings Content -->
+                    <div class="space-y-6">
+                        <!-- Profile Visibility Card -->
+                        <div class="settings-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Profilio matomumas</h2>
+                            
+                            <div class="space-y-6">
+                                <!-- Public Profile -->
+                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-4">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Viešas profilis</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Leisti kitiems matyti jūsų profilį</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only" id="publicProfileToggle" checked>
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Show Email -->
+                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-4">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Rodyti el. paštą</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Leisti kitiems matyti jūsų el. pašto adresą</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only" id="showEmailToggle">
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Online Status -->
+                                <div class="flex justify-between items-center pb-2">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Rodyti prisijungimo būseną</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Leisti kitiems matyti, kada esate prisijungę</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only" id="onlineStatusToggle" checked>
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Activity Privacy Card -->
+                        <div class="settings-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Veiklos privatumas</h2>
+                            
+                            <div class="space-y-6">
+                                <!-- Posts Visibility -->
+                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-4">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Įrašų matomumas</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Kas gali matyti jūsų įrašus</p>
+                                    </div>
+                                    <select class="px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white">
+                                        <option value="everyone" selected>Visi</option>
+                                        <option value="friends">Draugai</option>
+                                        <option value="only-me">Tik aš</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Academic Performance Visibility -->
+                                <div class="flex justify-between items-center border-b border-gray-100 dark:border-gray-700 pb-4">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Akademinių pasiekimų matomumas</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Kas gali matyti jūsų pažymius ir vidurkį</p>
+                                    </div>
+                                    <select class="px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white">
+                                        <option value="teachers">Tik mokytojai</option>
+                                        <option value="classmates">Mokytojai ir klasiokai</option>
+                                        <option value="everyone">Visi</option>
+                                        <option value="only-me">Tik aš</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Activity Log -->
+                                <div class="flex justify-between items-center pb-2">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800 dark:text-gray-200">Veiklos žurnalas</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Peržiūrėti ir valdyti savo veiklos istoriją</p>
+                                    </div>
+                                    <button class="px-4 py-2 bg-primary-500 dark:bg-primary-600 text-white rounded-lg hover:bg-primary-600 dark:hover:bg-primary-700 transition-colors text-sm">
+                                        Peržiūrėti
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Blocked Accounts Card -->
+                        <div class="settings-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Blokuoti vartotojai</h2>
+                            
+                            <div class="space-y-4">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Vartotojai, kuriuos užblokavote, negalės su jumis susisiekti, matyti jūsų profilio ar įrašų.</p>
+                                
+                                <!-- Blocked Users List -->
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                    <p class="text-center text-sm text-gray-500 dark:text-gray-400">Šiuo metu neturite užblokuotų vartotojų</p>
+                                </div>
+                                
+                                <!-- Add Blocked User -->
+                                <button class="mt-2 w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm flex items-center justify-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Pridėti naują blokuotą vartotoją
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page specific JS -->
+    <script>
+        // Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const sunIcon = document.querySelector('.sun-icon');
+        const moonIcon = document.querySelector('.moon-icon');
+        
+        function updateDarkModeUI(isDarkMode) {
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            } else {
+                document.documentElement.classList.remove('dark');
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+        }
+        
+        // Check initial state
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        updateDarkModeUI(isDarkMode);
+        
+        // Toggle dark mode with navbar icon
+        darkModeToggle.addEventListener('click', () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            localStorage.setItem('darkMode', isDarkMode ? 'disabled' : 'enabled');
+            updateDarkModeUI(!isDarkMode);
+        });
+        
+        // Toggle switches
+        const toggles = [
+            'publicProfileToggle',
+            'showEmailToggle',
+            'onlineStatusToggle'
+        ];
+        
+        toggles.forEach(id => {
+            const toggle = document.getElementById(id);
+            if (toggle) {
+                toggle.addEventListener('change', () => {
+                    // This would typically save to the database
+                    console.log(`${id} set to: ${toggle.checked}`);
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

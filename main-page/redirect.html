@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <!-- Use meta refresh instead of JavaScript -->
+    <meta http-equiv="refresh" content="0;url=../login%20page/login.html">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
+        .redirect-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4776E6;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Atsijungiama...</h2>
+    <p>Jūs būsite nukreipti į prisijungimo puslapį.</p>
+    <p>Jei nebūsite automatiškai nukreipti, <a href="../login%20page/login.html" class="redirect-link">spauskite čia</a>.</p>
+    
+    <!-- Fallback JavaScript with multiple approaches -->
+    <script>
+        setTimeout(function() {
+            // If meta refresh didn't work, try these methods
+            window.location.replace('../login%20page/login.html');
+        }, 1000);
+    </script>
+</body>
+</html> 

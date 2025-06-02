@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="lt" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grades - EduTrack</title>
+    <title>Pažymiai - EduTrack</title>
     <!-- Add favicon -->
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
     <!-- Tailwind CSS -->
@@ -74,19 +74,11 @@
                 <div class="flex justify-between items-center h-16">
                     <!-- Left Side - Logo and Brand -->
                     <div class="flex items-center space-x-4">
-                        <a href="../main-page.html" class="flex items-center space-x-2">
-                            <img src="../assets/favicon.ico" alt="Logo" class="w-8 h-8">
-                            <span class="text-xl font-bold text-primary-600 dark:text-primary-400">EduTrack</span>
-                        </a>
+                        <!-- Pašalintas logotipas ir EduTrack tekstas -->
                     </div>
 
                     <!-- Center - Navigation Links -->
-                    <div class="hidden md:flex items-center space-x-8">
-                        <a href="../main-page.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Home</a>
-                        <a href="#" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Courses</a>
-                        <a href="../homework/homework.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Homework</a>
-                        <a href="#" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium">Resources</a>
-                    </div>
+                    <!-- Pašalintos visos navigacijos nuorodos -->
 
                     <!-- Right Side - User Menu and Settings -->
                     <div class="flex items-center space-x-6">
@@ -103,11 +95,11 @@
                         </button>
                         
                         <!-- Back to Profile -->
-                        <a href="../main-page.html" class="flex items-center text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                        <a href="../student/dashboard.html" class="flex items-center text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
                             <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                             </svg>
-                            <span class="font-medium">Back to Home</span>
+                            <span class="font-medium">Atgal į skydelį</span>
                         </a>
                     </div>
                 </div>
@@ -120,16 +112,17 @@
                 <!-- Page Header -->
                 <div class="mb-8 flex justify-between items-center">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Grades</h1>
-                        <p class="text-gray-600 dark:text-gray-400">Track your academic performance</p>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Pažymiai</h1>
+                        <p class="text-gray-600 dark:text-gray-400">Stebėkite savo akademinius rezultatus</p>
                     </div>
                     <div class="flex items-center space-x-4">
                         <select id="term-selector" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-700 dark:text-white">
-                            <option value="current">Current Term</option>
-                            <option value="fall2023">Fall 2023</option>
-                            <option value="spring2023">Spring 2023</option>
-                            <option value="fall2022">Fall 2022</option>
+                            <option value="current">Dabartinis semestras</option>
+                            <option value="fall2025">2025 ruduo</option>
+                            <option value="spring2025">2025 pavasaris</option>
+                            <option value="fall2022">2022 ruduo</option>
                         </select>
+                        <button type="button" id="vpvModalOpen" class="ml-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md font-medium shadow transition">VPV skaičiuoklė</button>
                     </div>
                 </div>
 
@@ -137,19 +130,19 @@
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-100 dark:border-gray-700">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">Current GPA</span>
-                            <span class="text-3xl font-bold text-primary-600 dark:text-primary-400">3.8</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">Bendras vidurkis</span>
+                            <span class="text-3xl font-bold text-primary-600 dark:text-primary-400">8,7/10</span>
                         </div>
                         <div class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">Term GPA</span>
-                            <span class="text-3xl font-bold text-primary-600 dark:text-primary-400">3.92</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">Semestro vidurkis</span>
+                            <span class="text-3xl font-bold text-primary-600 dark:text-primary-400">9,2/10</span>
                         </div>
                         <div class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">Credits Earned</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">Surinkti kreditai</span>
                             <span class="text-3xl font-bold text-primary-600 dark:text-primary-400">60</span>
                         </div>
                         <div class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">Class Rank</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400 mb-1">Klasės reitingas</span>
                             <span class="text-3xl font-bold text-primary-600 dark:text-primary-400">Top 10%</span>
                         </div>
                     </div>
@@ -158,45 +151,44 @@
                 <!-- Current Courses -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 mb-6">
                     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Current Courses</h2>
-                        <div class="text-sm text-gray-500 dark:text-gray-400">Term: Fall 2023</div>
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Dabartiniai dalykai</h2>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Semestras: 2025 ruduo</div>
                     </div>
                     
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Course</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Instructor</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Credits</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Current Grade</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dalykas</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dėstytojas</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kreditai</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dabartinis pažymys</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Būsena</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700" id="current-courses-table">
-                                <!-- Course rows will be loaded here -->
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Mathematics 101</div>
-                                                <div class="text-sm text-gray-500 dark:text-gray-400">MATH101</div>
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Matematika 101</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">MAT101</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 dark:text-white">Dr. Smith</div>
+                                        <div class="text-sm text-gray-900 dark:text-white">Dr. Smiltė</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-900 dark:text-white">4</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                            A (95%)
+                                            10/10
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                        In Progress
+                                        Vykdoma
                                     </td>
                                 </tr>
                                 
@@ -204,24 +196,24 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Computer Science</div>
-                                                <div class="text-sm text-gray-500 dark:text-gray-400">CS202</div>
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Informatika</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">INF202</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 dark:text-white">Prof. Johnson</div>
+                                        <div class="text-sm text-gray-900 dark:text-white">Prof. Jonaitis</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-900 dark:text-white">3</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                            B+ (87%)
+                                            9/10
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                        In Progress
+                                        Vykdoma
                                     </td>
                                 </tr>
                                 
@@ -229,24 +221,24 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900 dark:text-white">English Literature</div>
-                                                <div class="text-sm text-gray-500 dark:text-gray-400">ENG210</div>
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Anglų literatūra</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">ANG210</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 dark:text-white">Dr. Williams</div>
+                                        <div class="text-sm text-gray-900 dark:text-white">Dr. Vilkė</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-900 dark:text-white">3</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                            A- (92%)
+                                            8/10
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                        In Progress
+                                        Vykdoma
                                     </td>
                                 </tr>
                             </tbody>
@@ -257,17 +249,17 @@
                 <!-- Grade History -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 mb-6">
                     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Grade History</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Pažymių istorija</h2>
                     </div>
                     
                     <!-- Accordion for previous terms -->
                     <div class="divide-y divide-gray-200 dark:divide-gray-700" id="grade-history-accordion">
-                        <!-- Spring 2023 -->
+                        <!-- Spring 2025 -->
                         <div class="term-accordion">
                             <button class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                 <div>
-                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Spring 2023</h3>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">GPA: 3.75</p>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">2025 pavasaris</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Vidurkis: 8,5/10</p>
                                 </div>
                                 <svg class="w-5 h-5 text-gray-500 dark:text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -277,30 +269,75 @@
                                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead class="bg-gray-50 dark:bg-gray-700">
                                         <tr>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Course</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Credits</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Final Grade</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dalykas</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kreditai</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Galutinis pažymys</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Physics 101</div>
-                                                <div class="text-sm text-gray-500 dark:text-gray-400">PHYS101</div>
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Fizika 101</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">FIZ101</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">4</td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">A (96%)</span>
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">9/10</span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900 dark:text-white">History 202</div>
-                                                <div class="text-sm text-gray-500 dark:text-gray-400">HIST202</div>
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Istorija 202</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">IST202</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">3</td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">B (85%)</span>
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">8/10</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- 2022 ruduo -->
+                        <div class="term-accordion">
+                            <button class="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">2022 ruduo</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Vidurkis: 8,2/10</p>
+                                </div>
+                                <svg class="w-5 h-5 text-gray-500 dark:text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div class="term-content hidden px-6 py-4">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dalykas</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kreditai</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Galutinis pažymys</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Fizika 101</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">FIZ101</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">4</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">9/10</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Istorija 202</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">IST202</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">3</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">8/10</span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -312,11 +349,11 @@
 
                 <!-- Grade Breakdown Chart -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-100 dark:border-gray-700 mb-6">
-                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Grade Distribution</h2>
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Pažymių pasiskirstymas</h2>
                     <div class="h-64" id="grade-chart-container">
                         <!-- Chart will be rendered here -->
                         <div class="flex items-center justify-center h-full">
-                            <p class="text-gray-500 dark:text-gray-400">Loading chart...</p>
+                            <p class="text-gray-500 dark:text-gray-400">Įkeliama diagrama...</p>
                         </div>
                     </div>
                 </div>
@@ -324,7 +361,57 @@
         </div>
     </div>
 
+    <!-- VPV Modal -->
+    <div id="vpvModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-sm relative">
+            <button id="vpvModalClose" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">&times;</button>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">VPV į vidurkį</h2>
+            <label for="vpvInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Įveskite VPV (0–10):</label>
+            <input id="vpvInput" type="number" min="0" max="10" step="0.01" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white mb-4 px-3 py-2" placeholder="pvz., 7.5">
+            <button id="vpvCalcBtn" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium">Skaičiuoti</button>
+            <div id="vpvResult" class="mt-4 text-lg font-semibold text-center text-primary-700 dark:text-primary-400"></div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="grades.js" type="module"></script>
+    <script>
+    // VPV Modal logic
+    const vpvModal = document.getElementById('vpvModal');
+    const vpvModalOpen = document.getElementById('vpvModalOpen');
+    const vpvModalClose = document.getElementById('vpvModalClose');
+    const vpvInput = document.getElementById('vpvInput');
+    const vpvCalcBtn = document.getElementById('vpvCalcBtn');
+    const vpvResult = document.getElementById('vpvResult');
+
+    vpvModalOpen.addEventListener('click', () => {
+        vpvModal.classList.remove('hidden');
+        vpvResult.textContent = '';
+        vpvInput.value = '';
+        vpvInput.focus();
+    });
+
+    vpvModalClose.addEventListener('click', () => {
+        vpvModal.classList.add('hidden');
+    });
+
+    vpvCalcBtn.addEventListener('click', () => {
+        const value = parseFloat(vpvInput.value.replace(',', '.'));
+        if (isNaN(value) || value < 0 || value > 10) {
+            vpvResult.textContent = 'Įveskite teisingą VPV reikšmę (0–10)';
+            vpvResult.classList.add('text-red-600', 'dark:text-red-400');
+            return;
+        }
+        vpvResult.classList.remove('text-red-600', 'dark:text-red-400');
+        vpvResult.textContent = `Vidurkis: ${value.toFixed(2)}/10`;
+    });
+
+    // Close modal on outside click
+    vpvModal.addEventListener('click', (e) => {
+        if (e.target === vpvModal) {
+            vpvModal.classList.add('hidden');
+        }
+    });
+    </script>
 </body>
 </html> 

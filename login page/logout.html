@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logging out...</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        .logout-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .redirect-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4776E6;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .redirect-link:hover {
+            background-color: #3a67d4;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="logout-container">
+        <h2>Atsijungiama...</h2>
+        <div id="loading-indicator">
+            <span class="loading"></span> Palaukite...
+        </div>
+        <p id="redirect-message" style="display: none;">
+            Jūs būsite nukreipti į prisijungimo puslapį.
+        </p>
+        <a id="manual-redirect" href="./login.html" class="redirect-link" style="display: none;">
+            Prisijungti
+        </a>
+    </div>
+    
+    <script>
+        // Clear all authentication data
+        function clearAuthData() {
+            localStorage.removeItem('current_user');
+            localStorage.removeItem('supabase.auth.token');
+            // Clear any other auth-related data that might exist
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.includes('auth') || key.includes('user') || key.includes('token'))) {
+                    localStorage.removeItem(key);
+                }
+            }
+            console.log('All authentication data cleared');
+        }
+        
+        // Handle redirection
+        function redirectToLogin() {
+            // No need to fetch since we're in the same directory
+            try {
+                // Redirect to login page in same directory
+                window.location.href = './login.html';
+            } catch (error) {
+                console.error('Error redirecting:', error);
+                // Show manual redirect option
+                document.getElementById('loading-indicator').style.display = 'none';
+                document.getElementById('redirect-message').style.display = 'block';
+                document.getElementById('manual-redirect').style.display = 'inline-block';
+            }
+        }
+        
+        // Execute logout process when page loads
+        window.onload = function() {
+            // Clear auth data
+            clearAuthData();
+            
+            // Redirect after a short delay
+            setTimeout(redirectToLogin, 1500);
+            
+            // Show manual redirect as fallback
+            setTimeout(function() {
+                document.getElementById('loading-indicator').style.display = 'none';
+                document.getElementById('redirect-message').style.display = 'block';
+                document.getElementById('manual-redirect').style.display = 'inline-block';
+            }, 3000);
+        };
+    </script>
+</body>
+</html> 

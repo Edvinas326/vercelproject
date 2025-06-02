@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="lt" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klasės - Mokytojo EduTrack</title>
+    <!-- Add favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom styles -->
+    <link rel="stylesheet" type="text/css" href="../main-styles.css">
+    <!-- Dark mode script -->
+    <script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.getItem('darkMode') === 'enabled' ||
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900">
+    <div class="min-h-screen">
+        <!-- Navigation Bar -->
+        <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 fixed w-full top-0 z-50 shadow-sm">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Left Side - Logo and Brand -->
+                    <div class="flex items-center space-x-4">
+                        <a href="../main-page.html" class="flex items-center space-x-2">
+                            <img src="../assets/favicon.ico" alt="Logotipas" class="w-8 h-8">
+                        </a>
+                    </div>
+
+                    <!-- Center - Navigation Links -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="../main-page.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium"></a>
+                        <a href="../courses/courses.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium"></a>
+                        <a href="../homework/homework.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium"></a>
+                        <a href="../resources/resources.html" class="nav-link text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 font-medium"></a>
+                    </div>
+
+                    <!-- Right Side - User Menu and Settings -->
+                    <div class="flex items-center space-x-6">
+                        <!-- Dark Mode Toggle -->
+                        <button id="darkModeToggle" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <!-- Sun icon (for dark mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            <!-- Moon icon (for light mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                        </button>
+
+                        <!-- Atsijungti Button -->
+                        <a href="../../login page/login.html" class="text-gray-700 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400 flex items-center">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Atsijungti
+                        </a>
+
+                        <!-- User Menu -->
+                        <div class="relative" id="user-menu">
+                            <button id="user-menu-button" class="flex items-center text-gray-700 dark:text-gray-300">
+                                <img id="profile-image" class="h-8 w-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name=User&background=random" alt="User">
+                                <span id="user-name-display" class="ml-2 mr-1 text-sm font-medium hidden md:block">Vartotojas</span>
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+
+                            <!-- User Dropdown Menu -->
+                            <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 hidden">
+                                <a href="../settings/settings.html" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Nustatymai</a>
+                                <a href="#" id="signout-button" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Atsijungti</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="pt-24 pb-8">
+            <div class="container mx-auto px-4">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Klasės</h1>
+                
+                <!-- Dashboard Layout with Sidebar -->
+                <div class="flex flex-col md:flex-row">
+                    <!-- Left Side Navigation Sidebar -->
+                    <div class="w-full md:w-64 mb-6 md:mb-0 md:mr-6">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden sticky top-24">
+                            <!-- Teacher Profile Summary -->
+                            <div class="p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                                <div class="flex items-center space-x-3">
+                                    <img id="sidebar-profile-image" class="h-12 w-12 rounded-full border-2 border-white" 
+                                         src="https://ui-avatars.com/api/?name=Teacher&background=random" alt="Teacher">
+                                    <div>
+                                        <h3 class="font-bold">Mokytojas</h3>
+                                        <p class="text-sm text-blue-100">Matematikos mokytojas</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Navigation Menu -->
+                            <nav class="p-2">
+                                <div class="space-y-1">
+                                    <!-- Dashboard -->
+                                    <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                        </svg>
+                                        Skydelis
+                                    </a>
+                                    
+                                    <!-- Students -->
+                                    <a href="students.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                        </svg>
+                                        Mokiniai
+                                    </a>
+                                    
+                                    <!-- Classes -->
+                                    <a href="classes.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                        Klasės
+                                    </a>
+                                    
+                                    <!-- Assignments -->
+                                    <a href="assignments.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                        </svg>
+                                        Namų darbų vertinimo puslapis
+                                    </a>
+                                    
+                                    <!-- Calendar -->
+                                    <a href="calendar.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Kalendorius
+                                    </a>
+                                    
+                                    <!-- Grading -->
+                                    <a href="grading.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Vertinimas
+                                    </a>
+                                    
+                                    <!-- Reports -->
+                                    <a href="reports.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                        <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Ataskaitos
+                                    </a>
+                                </div>
+                                
+                                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                    <h3 class="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nuorodos</h3>
+                                    <div class="mt-3 space-y-1">
+                                        <a href="../main-page.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                            </svg>
+                                            Į pagrindinį
+                                        </a>
+                                        <a href="../settings/settings.html" class="flex items-center px-4 py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-200">
+                                            <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                            Nustatymai
+                                        </a>
+                                    </div>
+                                </div>
+                            </nav>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Content Area -->
+                    <div class="flex-1">
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 space-y-4 md:space-y-0">
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Mano klasės</h2>
+                            <button class="flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Pridėti naują klasę
+                            </button>
+                        </div>
+                        
+                        <!-- Class Card Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Class Card 1 -->
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
+                                <div class="p-1 bg-blue-600">
+                                    <!-- Empty colored top stripe -->
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">9A Klasė</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Matematika</p>
+                                        </div>
+                                        <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                            9 klasė
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="mt-6 flex justify-between items-center">
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Mokinių skaičius</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">24</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Vidutinis pažymys</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">7.8</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Lankomumas</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">92%</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6 flex space-x-2">
+                                        <a href="#" class="flex-1 text-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors">
+                                            Peržiūrėti
+                                        </a>
+                                        <button class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Class Card 2 -->
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
+                                <div class="p-1 bg-green-600">
+                                    <!-- Empty colored top stripe -->
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">10B Klasė</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Matematika</p>
+                                        </div>
+                                        <span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                            10 klasė
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="mt-6 flex justify-between items-center">
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Mokinių skaičius</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">22</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Vidutinis pažymys</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">8.2</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Lankomumas</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">95%</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6 flex space-x-2">
+                                        <a href="#" class="flex-1 text-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors">
+                                            Peržiūrėti
+                                        </a>
+                                        <button class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Class Card 3 -->
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
+                                <div class="p-1 bg-purple-600">
+                                    <!-- Empty colored top stripe -->
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">11C Klasė</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Matematika</p>
+                                        </div>
+                                        <span class="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                            11 klasė
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="mt-6 flex justify-between items-center">
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Mokinių skaičius</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">20</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Vidutinis pažymys</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">8.6</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Lankomumas</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">89%</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6 flex space-x-2">
+                                        <a href="#" class="flex-1 text-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors">
+                                            Peržiūrėti
+                                        </a>
+                                        <button class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Class Card 4 -->
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
+                                <div class="p-1 bg-yellow-600">
+                                    <!-- Empty colored top stripe -->
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">12A Klasė</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Matematika</p>
+                                        </div>
+                                        <span class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                            12 klasė
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="mt-6 flex justify-between items-center">
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Mokinių skaičius</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">18</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Vidutinis pažymys</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">9.1</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Lankomumas</div>
+                                            <div class="text-lg font-semibold text-gray-900 dark:text-white">97%</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-6 flex space-x-2">
+                                        <a href="#" class="flex-1 text-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors">
+                                            Peržiūrėti
+                                        </a>
+                                        <button class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase
+    </script>
+    
+    <!-- Custom Scripts -->
+    <script src="./dashboard.js"></script>
+    <script src="../main.js"></script>
+</body>
+</html> 

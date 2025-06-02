@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mokinio Skydelis - Vivo</title>
+    
+    <!-- Add favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {},
+            },
+        }
+    </script>
+    
+    <!-- Custom styles -->
+    <link rel="stylesheet" type="text/css" href="../main-styles.css">
+    <link rel="stylesheet" type="text/css" href="../calendar/calendar-styles.css">
+    <link rel="stylesheet" href="../gpa-calculator/gpa-calculator.css">
+    
+    <!-- Libraries -->
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    
+    <!-- Dark mode script -->
+    <script>
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('darkMode', 'disabled');
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-black">
+    <div class="min-h-screen">
+        <!-- Navigation Bar -->
+        <nav class="bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 fixed w-full top-0 z-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Left Side - Logo and Brand -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Pašalintas logotipas ir Vivo tekstas -->
+                    </div>
+
+                    <!-- Center - Navigation Links -->
+                    <!-- Pašalintos visos navigacijos nuorodos -->
+
+                    <!-- Right Side - User Menu -->
+                    <div class="flex items-center space-x-6">
+                        <!-- Dark Mode Toggle -->
+                        <button id="darkModeToggle" class="text-gray-600 dark:text-white hover:text-gray-800 dark:hover:text-gray-300 p-2 rounded-lg transition-colors">
+                            <!-- Sun Icon (shown in dark mode) -->
+                            <svg class="w-6 h-6 hidden dark:block" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="5"></circle>
+                                <line x1="12" y1="1" x2="12" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="23"></line>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                <line x1="1" y1="12" x2="3" y2="12"></line>
+                                <line x1="21" y1="12" x2="23" y2="12"></line>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                            </svg>
+                            <!-- Moon Icon (shown in light mode) -->
+                            <svg class="w-6 h-6 block dark:hidden" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                            </svg>
+                        </button>
+
+                        <!-- User Menu Button -->
+                        <div class="relative">
+                            <button id="user-menu-button" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
+                                <img id="user-avatar" src="https://ui-avatars.com/api/?name=Student&background=random" alt="Vartotojas" class="w-8 h-8 rounded-full">
+                                <span id="user-name" class="font-medium">Mokinys</span>
+                            </button>
+                            
+                            <!-- User Dropdown Menu -->
+                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
+                                <a href="../settings/settings.html" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Nustatymai</a>
+                                <div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                                <button id="signout-button" class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                    </svg>
+                                    Atsijungti
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="pt-28">
+            <div class="container mx-auto px-4 grid md:grid-cols-12 gap-6">
+                <!-- Left Sidebar - Profile Info -->
+                <div class="md:col-span-3">
+                    <!-- Profile Info Box -->
+                    <div class="bg-white dark:bg-[#1a1a1a] rounded-lg shadow-lg overflow-hidden mb-6 transform transition-all duration-300 hover:shadow-xl relative">
+                        <!-- Dynamic background with subtle animation -->
+                        <div class="relative h-32 overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 blur-effect"></div>
+                            <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+                        </div>
+                        
+                        <!-- Profile photo -->
+                        <div class="relative -mt-16 px-6">
+                            <img src="https://ui-avatars.com/api/?name=Student&size=128&background=random" 
+                                 alt="Profile picture"
+                                 id="profile-avatar"
+                                 class="profile-photo w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 shadow-lg transform transition-transform hover:scale-105">
+                        </div>
+                        
+                        <!-- Profile info -->
+                        <div class="px-6 py-4">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h2 id="profile-name" class="text-xl font-bold text-gray-900 dark:text-white">Mokinio vardas</h2>
+                                    <p id="profile-username" class="text-sm text-gray-600 dark:text-gray-300">@naudotojas</p>
+                                </div>
+                                <a href="../settings/settings.html" 
+                                   class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors text-sm">Redaguoti profilį</a>
+                            </div>
+
+                            <!-- Academic Info Cards -->
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <div class="text-sm font-medium text-gray-500 dark:text-gray-300 mb-1">Vidurkis</div>
+                                    <div id="profile-gpa" class="text-lg font-bold text-blue-600 dark:text-blue-400">8.5/10</div>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <div class="text-sm font-medium text-gray-500 dark:text-gray-300 mb-1">Klasės lygis</div>
+                                    <div id="profile-grade" class="text-lg font-bold text-blue-600 dark:text-blue-400">Abiturientas</div>
+                                </div>
+                            </div>
+
+                            <!-- Info List -->
+                            <div class="space-y-4">
+                                <div class="flex items-center text-sm">
+                                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                    <span id="profile-school" class="text-gray-600 dark:text-gray-300">Mokyklos pavadinimas</span>
+                                </div>
+                                
+                                <div class="flex items-center text-sm">
+                                    <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <span id="profile-email" class="text-gray-600 dark:text-gray-300">mokinys@pavyzdys.lt</span>
+                                    <span id="profile-email" class="text-gray-600 dark:text-gray-300">student@example.com</span>
+                                </div>
+                            </div>
+
+                            <!-- Bio Section -->
+                            <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">About Me</h3>
+                                <p id="profile-bio" class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">Click settings to add a bio</p>
+                            </div>
+
+                            <!-- Last Updated -->
+                            <div class="mt-4 text-xs text-gray-400 dark:text-gray-500">
+                                Profile last updated: <span id="profile-updated">Never</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add calendar container for full calendar -->
+                    <div id="calendar-container" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mt-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Kalendorius</h3>
+                            <div class="flex items-center space-x-2">
+                                <button id="add-event-btn" class="flex items-center px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:ring-offset-1 transition-colors text-xs">
+                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Pridėti įvykį
+                                </button>
+                                <div class="flex space-x-1">
+                                    <button id="prev-month" class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
+                                        <svg class="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                        </svg>
+                                    </button>
+                                    <button id="next-month" class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
+                                        <svg class="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="calendar-header" class="grid grid-cols-7 gap-px mb-1 bg-gray-200 dark:bg-gray-700 rounded-t-lg overflow-hidden">
+                            <div class="text-center text-xs font-medium text-gray-600 dark:text-gray-300 py-1.5 bg-gray-100 dark:bg-gray-800">Pirm</div>
+                            <div class="text-center text-xs font-medium text-gray-600 dark:text-gray-300 py-1.5 bg-gray-100 dark:bg-gray-800">Antr</div>
+                            <div class="text-center text-xs font-medium text-gray-600 dark:text-gray-300 py-1.5 bg-gray-100 dark:bg-gray-800">Treč</div>
+                            <div class="text-center text-xs font-medium text-gray-600 dark:text-gray-300 py-1.5 bg-gray-100 dark:bg-gray-800">Ketv</div>
+                            <div class="text-center text-xs font-medium text-gray-600 dark:text-gray-300 py-1.5 bg-gray-100 dark:bg-gray-800">Penk</div>
+                            <div class="text-center text-xs font-medium text-gray-600 dark:text-gray-300 py-1.5 bg-gray-100 dark:bg-gray-800">Šešt</div>
+                            <div class="text-center text-xs font-medium text-gray-600 dark:text-gray-300 py-1.5 bg-gray-100 dark:bg-gray-800">Sekm</div>
+                        </div>
+                        <div id="calendar-days" class="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700 rounded-b-lg overflow-hidden"></div>
+                        <div id="events-list" class="mt-4 space-y-1 max-h-[300px] overflow-y-auto pr-1"></div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area - Posts -->
+                <div class="md:col-span-6">
+                    <!-- Post Creation Box -->
+                    <div class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-lg p-6 relative overflow-hidden transform transition-all duration-300 hover:shadow-xl border border-gray-100 dark:border-gray-800">
+                        <!-- Add subtle accent color strip at top -->
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <img id="post-creator-avatar" 
+                                 class="profile-photo w-12 h-12 rounded-full border-2 border-blue-100"
+                                 src="https://ui-avatars.com/api/?name=Student&size=48&background=random" 
+                                 alt="Your Profile">
+                            <div class="flex-grow">
+                                <div class="relative">
+                                    <textarea 
+                                        id="post-content"
+                                        name="post-content"
+                                        aria-label="Sukurti naują įrašą"
+                                        class="w-full px-4 py-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-gray-50 dark:bg-[#1a1a1a] hover:bg-white dark:hover:bg-gray-900 transition-colors dark:text-white" 
+                                        rows="3" 
+                                        placeholder="Pasidalinkite kažkuo su savo bendraklasiais..."></textarea>
+                                    
+                                    <!-- Image preview -->
+                                    <div id="image-preview-container" class="hidden mt-2">
+                                        <div class="relative rounded-lg overflow-hidden border border-gray-200">
+                                            <img id="image-preview" class="w-full max-h-64 object-cover" src="" alt="Peržiūra">
+                                            <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-colors">
+                                                <button id="remove-image" 
+                                                        class="absolute top-2 right-2 p-1.5 bg-gray-900 bg-opacity-50 rounded-full text-white 
+                                                               hover:bg-opacity-75 transition-colors transform hover:scale-105">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                              d="M6 18L18 6M6 6l12 12">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between items-center mt-4">
+                                    <div class="flex space-x-3">
+                                        <label class="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition-colors cursor-pointer">
+                                            <input type="file" 
+                                                   id="post-image-upload" 
+                                                   accept="image/*" 
+                                                   class="hidden" />
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                            </path>
+                                            </svg>
+                                            <span class="text-sm font-medium">Pridėti nuotrauką</span>
+                                        </label>
+                                    </div>
+                                    <button id="create-post-btn" 
+                                            class="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 
+                                                   focus:ring-offset-2 transition-colors" 
+                                            type="button">
+                                        Skelbti
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Posts Feed -->
+                    <div class="posts-feed space-y-4">
+                        <!-- Posts will be loaded here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right Sidebar - Quick Access -->
+                <div class="md:col-span-3 space-y-6">
+                    <!-- Quick Links -->
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-black dark:to-gray-900 rounded-lg shadow-lg p-8 relative">
+                        <h2 class="text-2xl font-bold text-white mb-8 flex items-center">
+                            <svg class="w-7 h-7 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                            </svg>
+                            Greita prieiga
+                        </h2>
+                        <!-- Student quick links -->
+                        <div id="student-quick-links" class="grid grid-cols-2 gap-4">
+                            <a href="../homework/homework.html" class="quick-link-card">
+                                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-all duration-300">
+                                    <div class="text-3xl mb-3">📚</div>
+                                    <span class="text-white text-base font-medium">Namų darbai</span>
+                                </div>
+                            </a>
+
+                            <a href="../assignments/assignments.html" class="quick-link-card">
+                                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-all duration-300">
+                                    <div class="text-3xl mb-3">📝</div>
+                                    <span class="text-white text-base font-medium">Užduotys</span>
+                                </div>
+                            </a>
+                            
+                            <a href="../grades/grades.html" class="quick-link-card">
+                                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-all duration-300">
+                                    <div class="text-3xl mb-3">📊</div>
+                                    <span class="text-white text-base font-medium">Pažymiai</span>
+                                </div>
+                            </a>
+
+                            <a href="#" id="gpaCalculatorLink" class="quick-link-card">
+                                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-all duration-300">
+                                    <div class="text-3xl mb-3">🧮</div>
+                                    <span class="text-white text-base font-medium">Vidurkio skaičiuoklė</span>
+                                </div>
+                            </a>
+                            
+                            <a href="../calendar/calendar.html" class="quick-link-card">
+                                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-all duration-300">
+                                    <div class="text-3xl mb-3">📅</div>
+                                    <span class="text-white text-base font-medium">Tvarkaraštis</span>
+                                </div>
+                            </a>
+
+                            <a href="../messages/messages.html" class="quick-link-card">
+                                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-all duration-300">
+                                    <div class="text-3xl mb-3">📧</div>
+                                    <span class="text-white text-base font-medium">Žinutės</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase client only if it hasn't been initialized
+        if (!window.supabase) {
+            const { createClient } = supabase;
+            const supabaseUrl = 'https://btlkhjvfgotdspjucqhh.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0bGtoanZmZ290ZHNwanVjcWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY2NDU4OTIsImV4cCI6MjA2MjIyMTg5Mn0.QRw30CjtxaWrwihv2hmEo9SdvaKKjYQcpeTQwWkq2T4';
+            window.supabase = createClient(supabaseUrl, supabaseKey);
+        }
+    </script>
+    <script src="dashboard.js"></script>
+    <script src="calendar.js"></script>
+    <script src="../gpa-calculator/gpa-calculator.js"></script>
+
+    <!-- GPA Calculator Modal -->
+    <div id="gpaCalculatorModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-lg p-6 w-full max-w-2xl mx-4">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Vidurkio Skaičiuoklė</h3>
+                <button id="closeGpaCalculator" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Calculator Form -->
+            <div class="space-y-6">
+                <div id="courseInputs" class="space-y-4">
+                    <!-- Course 1 -->
+                    <div class="course-input flex space-x-3">
+                        <input type="text" placeholder="Dalyko pavadinimas" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        <select class="w-24 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white">
+                            <option value="10">10</option>
+                            <option value="9">9</option>
+                            <option value="8">8</option>
+                            <option value="7">7</option>
+                            <option value="6">6</option>
+                            <option value="5">5</option>
+                            <option value="4">4</option>
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                            <option value="1">1</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Add/Remove Course Buttons -->
+                <div class="flex space-x-3">
+                    <button id="addCourse" class="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Pridėti dalyką
+                    </button>
+                    <button id="removeCourse" class="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Pašalinti dalyką
+                    </button>
+                </div>
+
+                <!-- Calculate Button -->
+                <button id="calculateGpa" class="w-full flex items-center justify-center px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                    Skaičiuoti vidurkį
+                </button>
+
+                <!-- Result -->
+                <div id="gpaResult" class="mt-6 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div class="text-center">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Jūsų vidurkis:</p>
+                        <p class="text-4xl font-bold text-blue-600 dark:text-blue-400">0.00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

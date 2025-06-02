@@ -1,36 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="lt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - EduTrack</title>
+    <title>Nustatymai - EduTrack</title>
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
     <!-- Supabase -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script>
-        const { createClient } = supabase
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+    <!-- Common functions -->
+    <script src="../common.js"></script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Custom styles -->
     <link rel="stylesheet" type="text/css" href="../main-styles.css">
+    <style>
+        /* Custom styles for settings page */
+        .profile-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e0f2fe;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings-card {
+            transition: all 0.3s ease;
+        }
+        
+        .settings-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab-active {
+            color: #0ea5e9;
+            border-color: #0ea5e9;
+        }
+        
+        .switch-dot {
+            transition: transform 0.3s ease;
+        }
+        
+        input:checked ~ .switch-bg {
+            background-color: #0ea5e9;
+        }
+        
+        input:checked ~ .switch-bg .switch-dot {
+            transform: translateX(100%);
+        }
+        
+        .save-button-pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(14, 165, 233, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(14, 165, 233, 0);
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <!-- Dark mode script -->
+    <script>
+        if (localStorage.getItem('darkMode') === 'enabled' ||
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
     <div class="min-h-screen">
         <!-- Navigation Bar -->
-        <nav class="bg-white border-b border-gray-200 fixed w-full top-0 z-50">
+        <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 fixed w-full top-0 z-50 shadow-sm">
             <div class="container mx-auto px-4">
-                <div class="flex items-center justify-between h-16">
-                    <div class="flex items-center">
-                        <a href="../main-page.html" class="flex items-center space-x-2">
-                            <img src="../assets/favicon.ico" alt="Logo" class="w-8 h-8">
-                            <span class="text-xl font-bold text-blue-600">EduTrack</span>
+                <div class="flex items-center justify-end h-16">
+                    <!-- Right side navigation items -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Dark Mode Toggle -->
+                        <button id="darkModeToggle" class="text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+                            <!-- Sun Icon (shown in dark mode) -->
+                            <svg class="w-6 h-6 sun-icon" style="display: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <!-- Moon Icon (shown in light mode) -->
+                            <svg class="w-6 h-6 moon-icon" style="display: block;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646A9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Back to main page -->
+                        <a href="../teacher/dashboard.html" class="text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline flex items-center">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Atgal į mokytojo skydelį
                         </a>
                     </div>
-                    <a href="../main-page.html" class="text-gray-600 hover:text-blue-500">
-                        Back to Home
-                    </a>
                 </div>
             </div>
         </nav>
@@ -38,147 +143,247 @@
         <!-- Main Content -->
         <div class="pt-28 pb-8">
             <div class="container mx-auto px-4">
-                <div class="max-w-3xl mx-auto">
-                    <h1 class="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+                <div class="max-w-4xl mx-auto">
+                    <!-- Settings Header with Tabs -->
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Nustatymai</h1>
+                        
+                        <!-- Tabs -->
+                        <div class="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+                            <a href="./settings.html" class="tab-active py-2 px-4 border-b-2 font-medium text-sm whitespace-nowrap">
+                                Profilio nustatymai
+                            </a>
+                            <a href="./account-settings.html" class="py-2 px-4 border-b-2 border-transparent text-gray-500 dark:text-gray-400 font-medium text-sm hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap">
+                                Paskyros nustatymai
+                            </a>
+                            <a href="./privacy-settings.html" class="py-2 px-4 border-b-2 border-transparent text-gray-500 dark:text-gray-400 font-medium text-sm hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap">
+                                Privatumo nustatymai
+                            </a>
+                            <a href="./notification-settings.html" class="py-2 px-4 border-b-2 border-transparent text-gray-500 dark:text-gray-400 font-medium text-sm hover:text-primary-600 dark:hover:text-primary-400 whitespace-nowrap">
+                                Pranešimų nustatymai
+                            </a>
+                        </div>
+                    </div>
                     
                     <!-- Settings Sections -->
-                    <div class="space-y-6">
-                        <!-- Theme Settings -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Appearance</h2>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-700">Dark Mode</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="dark-mode-toggle" class="sr-only">
-                                    <div class="w-11 h-6 bg-gray-200 rounded-full">
-                                        <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform"></div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left Column - Profile Photo and Theme -->
+                        <div class="lg:col-span-1 space-y-6">
+                            <!-- Profile Photo Card -->
+                            <div class="settings-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Profilio nuotrauka</h2>
+                                <div class="flex flex-col items-center">
+                                    <div class="relative mb-4">
+                                        <img id="current-profile-photo" 
+                                             class="profile-photo" 
+                                             src="https://ui-avatars.com/api/?name=User&background=random&size=120" 
+                                             alt="Profilio nuotrauka">
+                                        <button class="absolute bottom-0 right-0 bg-primary-500 text-white p-2 rounded-full shadow-md hover:bg-primary-600 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                        </button>
                                     </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Profile Settings -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Profile Settings</h2>
-                            
-                            <!-- Add Profile Photo Section at the top of Profile Settings -->
-                            <div class="profile-photo-section mb-6">
-                                <img id="current-profile-photo" 
-                                     class="profile-photo" 
-                                     src="https://ui-avatars.com/api/?name=User&background=random" 
-                                     alt="Profile Photo">
-                                <div class="flex flex-col items-center gap-2">
                                     <input type="file" 
                                            id="photo-upload" 
                                            accept="image/*"
-                                           class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                           class="hidden">
                                     <button id="upload-photo-btn"
-                                            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-                                        Update Profile Photo
+                                            class="w-full mt-2 px-4 py-2 bg-primary-500 dark:bg-primary-600 text-white rounded-lg hover:bg-primary-600 dark:hover:bg-primary-700 transition-colors text-sm font-medium flex items-center justify-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"></path>
+                                        </svg>
+                                        Įkelti naują nuotrauką
                                     </button>
                                 </div>
                             </div>
-
-                            <!-- Profile Form -->
-                            <form id="profileForm" class="space-y-4">
-                                <!-- Name -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                    <input type="text" id="fullName" 
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                           placeholder="Enter your full name">
-                                </div>
-
-                                <!-- Username -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                                    <input type="text" id="username" 
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                           placeholder="Enter your username">
-                                </div>
-
-                                <!-- Email -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                    <div class="flex items-center space-x-2">
-                                        <input type="email" id="email" 
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                               placeholder="Your email address"
-                                               disabled>
-                                        <button type="button" 
-                                                id="changeEmailBtn"
-                                                class="px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-                                            Change
-                                        </button>
+                            
+                            <!-- Theme Settings Card -->
+                            <div class="settings-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Išvaizda</h2>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-700 dark:text-gray-300 font-medium">Tamsusis režimas</p>
+                                        <p class="text-gray-500 dark:text-gray-400 text-sm">Perjungti šviesų/tamsų režimą</p>
                                     </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="darkModeToggleSwitch" class="sr-only">
+                                        <div class="switch-bg w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full px-1 flex items-center">
+                                            <div class="switch-dot w-4 h-4 bg-white rounded-full shadow-md"></div>
+                                        </div>
+                                    </label>
                                 </div>
-
-                                <!-- School -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">School</label>
-                                    <input type="text" id="school" 
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                           placeholder="Enter your school">
+                            </div>
+                            
+                            <!-- Account Actions Card -->
+                            <div class="settings-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Paskyros veiksmai</h2>
+                                <div class="space-y-3">
+                                    <a href="./account-settings.html" class="flex items-center text-gray-700 dark:text-gray-300 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                        </svg>
+                                        Keisti slaptažodį
+                                    </a>
+                                    <a href="./privacy-settings.html" class="flex items-center text-gray-700 dark:text-gray-300 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                        </svg>
+                                        Privatumo nustatymai
+                                    </a>
+                                    <a href="./notification-settings.html" class="flex items-center text-gray-700 dark:text-gray-300 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                        </svg>
+                                        Pranešimų nustatymai
+                                    </a>
+                                    <a href="#" id="signout-button" class="flex items-center text-red-600 dark:text-red-400 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900 dark:hover:bg-opacity-20 transition-colors">
+                                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                        </svg>
+                                        Atsijungti
+                                    </a>
                                 </div>
-
-                                <!-- Bio -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-                                    <textarea id="bio" rows="3" 
-                                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                              placeholder="Tell us about yourself"></textarea>
-                                </div>
-
-                                <!-- Academic Information -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Grade Level</label>
-                                    <select id="gradeLevel" 
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="">Select Grade</option>
-                                        <option value="9th Grade">9th Grade</option>
-                                        <option value="10th Grade">10th Grade</option>
-                                        <option value="11th Grade">11th Grade</option>
-                                        <option value="12th Grade">12th Grade</option>
-                                        <option value="College Freshman">College Freshman</option>
-                                        <option value="College Sophomore">College Sophomore</option>
-                                        <option value="College Junior">College Junior</option>
-                                        <option value="College Senior">College Senior</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">GPA</label>
-                                    <input type="number" id="gpa" step="0.01" min="0" max="4" 
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                           placeholder="Enter your GPA (e.g., 3.5)"
-                                           value="0.00">
-                                </div>
-                            </form>
-
-                            <!-- Other profile options -->
-                            <div class="mt-6 space-y-4">
-                                <a href="#" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                                    Change Password
-                                </a>
                             </div>
                         </div>
+                        
+                        <!-- Right Column - Profile Form -->
+                        <div class="lg:col-span-2">
+                            <div class="settings-card bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Profilio informacija</h2>
+                                
+                                <!-- Profile Form -->
+                                <form id="profileForm" class="space-y-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!-- Name -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pilnas vardas</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                    </svg>
+                                                </div>
+                                                <input type="text" id="fullName" 
+                                                      class="w-full pl-10 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white"
+                                                      placeholder="Įveskite savo pilną vardą">
+                                            </div>
+                                        </div>
 
-                        <!-- Account Settings -->
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h2 class="text-lg font-semibold text-gray-900 mb-4">Account Settings</h2>
-                            <div class="space-y-4">
-                                <a href="#" 
-                                   class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                                    Notification Preferences
-                                </a>
-                                <a href="#" 
-                                   class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
-                                    Privacy Settings
-                                </a>
-                                <a href="#" id="signout-button"
-                                   class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md">
-                                    Sign Out
-                                </a>
+                                        <!-- Username -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vartotojo vardas</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <span class="text-gray-400">@</span>
+                                                </div>
+                                                <input type="text" id="username" 
+                                                      class="w-full pl-10 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white"
+                                                      placeholder="Įveskite savo vartotojo vardą">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">El. paštas</label>
+                                        <div class="flex items-center space-x-2">
+                                            <div class="relative flex-1">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                </div>
+                                                <input type="email" id="email" 
+                                                      class="w-full pl-10 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white"
+                                                      placeholder="Jūsų el. pašto adresas"
+                                                      disabled>
+                                            </div>
+                                            <button type="button" 
+                                                   id="changeEmailBtn"
+                                                   class="px-4 py-2 bg-primary-500 dark:bg-primary-600 text-white rounded-lg hover:bg-primary-600 dark:hover:bg-primary-700 transition-colors text-sm">
+                                                Keisti
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- School -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mokykla</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                                </svg>
+                                            </div>
+                                            <input type="text" id="school" 
+                                                  class="w-full pl-10 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white"
+                                                  placeholder="Įveskite savo mokyklą">
+                                        </div>
+                                    </div>
+
+                                    <!-- Bio -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aprašymas</label>
+                                        <textarea id="bio" rows="3" 
+                                                 class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white"
+                                                 placeholder="Papasakokite apie save"></textarea>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!-- Academic Information -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Klasės lygis</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                                    </svg>
+                                                </div>
+                                                <select id="gradeLevel" 
+                                                       class="w-full pl-10 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 appearance-none dark:text-white">
+                                                    <option value="">Pasirinkite klasę</option>
+                                                    <option value="9th Grade">9 klasė</option>
+                                                    <option value="10th Grade">10 klasė</option>
+                                                    <option value="11th Grade">11 klasė</option>
+                                                    <option value="12th Grade">12 klasė</option>
+                                                </select>
+                                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vidurkis</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                                    </svg>
+                                                </div>
+                                                <input type="number" id="gpa" step="0.01" min="0" max="10" 
+                                                      class="w-full pl-10 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-white"
+                                                      placeholder="Įveskite savo Vidurkį (pvz., 8.5)"
+                                                      value="0.00">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Save Changes Button -->
+                                    <div class="flex justify-end mt-6">
+                                        <button type="submit" id="saveProfileBtn" 
+                                               class="save-button-pulse px-6 py-3 bg-primary-500 dark:bg-primary-600 text-white rounded-lg hover:bg-primary-600 dark:hover:bg-primary-700 transition-colors text-base font-medium flex items-center">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            Išsaugoti pakeitimus
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -187,6 +392,59 @@
         </div>
     </div>
 
+    <!-- Settings page specific JS -->
     <script src="settings.js"></script>
+    <script>
+        // Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeToggleSwitch = document.getElementById('darkModeToggleSwitch');
+        const sunIcon = document.querySelector('.sun-icon');
+        const moonIcon = document.querySelector('.moon-icon');
+        
+        function updateDarkModeUI(isDarkMode) {
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+                darkModeToggleSwitch.checked = true;
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            } else {
+                document.documentElement.classList.remove('dark');
+                darkModeToggleSwitch.checked = false;
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+        }
+        
+        // Check initial state
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        updateDarkModeUI(isDarkMode);
+        
+        // Toggle dark mode with navbar icon
+        darkModeToggle.addEventListener('click', () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            localStorage.setItem('darkMode', isDarkMode ? 'disabled' : 'enabled');
+            updateDarkModeUI(!isDarkMode);
+        });
+        
+        // Toggle dark mode with switch
+        darkModeToggleSwitch.addEventListener('change', () => {
+            const isDarkMode = darkModeToggleSwitch.checked;
+            localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+            updateDarkModeUI(isDarkMode);
+        });
+        
+        // Profile photo upload trigger
+        const photoUploadBtn = document.getElementById('upload-photo-btn');
+        const photoInput = document.getElementById('photo-upload');
+        const photoContainer = document.querySelector('.relative.mb-4');
+        
+        photoUploadBtn.addEventListener('click', () => {
+            photoInput.click();
+        });
+        
+        photoContainer.addEventListener('click', () => {
+            photoInput.click();
+        });
+    </script>
 </body>
 </html> 

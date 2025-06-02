@@ -1,48 +1,10 @@
-import supabase from '../../supabase-config.js'
-
-// Move saveGPAToProfile outside the class
-async function saveGPAToProfile(gpa) {
-    try {
-        const { data: { user }, error: authError } = await supabase.auth.getUser()
-        
-        if (authError || !user) {
-            console.error('Authentication error:', authError)
-            return
-        }
-
-        const { error } = await supabase
-            .from('profiles')
-            .upsert({
-                id: user.id,
-                gpa: parseFloat(gpa),
-                updated_at: new Date().toISOString()
-            })
-
-        if (error) {
-            console.error('Error saving GPA:', error)
-            return
-        }
-
-        // Show success message
-        const notification = document.createElement('div')
-        notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg'
-        notification.textContent = 'GPA updated successfully!'
-        document.body.appendChild(notification)
-
-        // Remove notification after 3 seconds
-        setTimeout(() => {
-            notification.remove()
-        }, 3000)
-
-    } catch (error) {
-        console.error('Error in saveGPAToProfile:', error)
-    }
-}
+// Initialize Supabase client
+const supabase = window.supabase;
 
 class GPACalculator {
     constructor() {
         this.modal = document.getElementById('gpaCalculatorModal');
-        this.closeBtn = document.getElementById('closeGpaModal');
+        this.closeBtn = document.getElementById('closeGpaCalculator');
         this.addCourseBtn = document.getElementById('addCourse');
         this.removeCourseBtn = document.getElementById('removeCourse');
         this.calculateBtn = document.getElementById('calculateGpa');
@@ -54,10 +16,12 @@ class GPACalculator {
     }
 
     initializeEventListeners() {
-        // Close modal events
+        // Modal events
         this.closeBtn.addEventListener('click', () => this.closeModal());
         this.modal.addEventListener('click', (e) => {
-            if (e.target === this.modal) this.closeModal();
+            if (e.target === this.modal) {
+                this.closeModal();
+            }
         });
 
         // Add/Remove course events
@@ -66,16 +30,25 @@ class GPACalculator {
 
         // Calculate GPA event
         this.calculateBtn.addEventListener('click', () => this.calculateGPA());
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !this.modal.classList.contains('hidden')) {
+                this.closeModal();
+            }
+        });
     }
 
     openModal() {
         this.modal.classList.remove('hidden');
         this.modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
     }
 
     closeModal() {
         this.modal.classList.add('hidden');
         this.modal.classList.remove('flex');
+        document.body.style.overflow = '';
     }
 
     addCourse() {
@@ -98,82 +71,71 @@ class GPACalculator {
         this.removeCourseBtn.classList.toggle('opacity-50', this.courseInputs.children.length <= 1);
     }
 
-    calculateGPA() {
-        let totalQualityPoints = 0;
-        let totalCredits = 0;
+    async calculateGPA() {
+        let totalPoints = 0;
         let courses = [];
 
         // Collect all course data
         this.courseInputs.querySelectorAll('.course-input').forEach(course => {
             const courseName = course.querySelector('input').value.trim();
-            const grade = parseFloat(course.querySelectorAll('select')[0].value);
-            const credits = parseFloat(course.querySelectorAll('select')[1].value);
+            const grade = parseFloat(course.querySelector('select').value);
             
             // Only include courses with names
             if (courseName) {
-                totalQualityPoints += (grade * credits);
-                totalCredits += credits;
+                totalPoints += grade;
 
                 courses.push({
                     name: courseName,
-                    grade: grade,
-                    credits: credits,
-                    qualityPoints: (grade * credits)
+                    grade: grade
                 });
             }
         });
 
-        // Calculate GPA
-        let gpa = 0;
-        if (totalCredits > 0) {
-            gpa = (totalQualityPoints / totalCredits).toFixed(2);
+        // Calculate average
+        let average = 0;
+        if (courses.length > 0) {
+            average = (totalPoints / courses.length).toFixed(2);
         }
 
         // Update result with detailed breakdown
-        this.updateGPADisplay(gpa, courses, totalCredits, totalQualityPoints);
+        this.updateGPADisplay(average, courses);
 
-        // Save the GPA to profile
-        saveGPAToProfile(gpa);
+        // Save the average to profile
+        await this.saveAverageToProfile(average);
     }
 
-    updateGPADisplay(gpa, courses, totalCredits, totalQualityPoints) {
+    updateGPADisplay(average, courses) {
         // Create detailed results HTML
         let resultsHTML = `
-            <div class="text-center mb-4">
-                <span class="text-3xl font-bold">${gpa}</span>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Cumulative GPA</p>
+            <div class="text-center mb-6">
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Jūsų vidurkis:</p>
+                <p class="text-4xl font-bold text-blue-600 dark:text-blue-400">${average}</p>
             </div>
         `;
 
         // Add course breakdown if there are courses
         if (courses.length > 0) {
             resultsHTML += `
-                <div class="mt-4 border-t pt-4">
-                    <h4 class="font-semibold mb-2">Course Breakdown:</h4>
-                    <div class="space-y-2">
+                <div class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+                    <h4 class="font-semibold text-gray-900 dark:text-white mb-4">Dalykų sąrašas:</h4>
+                    <div class="space-y-3">
             `;
 
             courses.forEach(course => {
                 resultsHTML += `
-                    <div class="flex justify-between text-sm">
-                        <span>${course.name}</span>
-                        <span>
-                            ${this.getLetterGrade(course.grade)} (${course.credits} credits)
-                        </span>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-700 dark:text-gray-300">${course.name}</span>
+                        <span class="text-gray-600 dark:text-gray-400">${course.grade} balai</span>
                     </div>
                 `;
             });
 
             resultsHTML += `
                     </div>
-                    <div class="mt-4 pt-4 border-t text-sm">
-                        <div class="flex justify-between">
-                            <span>Total Credits:</span>
-                            <span>${totalCredits}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Total Quality Points:</span>
-                            <span>${totalQualityPoints.toFixed(2)}</span>
+                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-700 dark:text-gray-300">Dalykų skaičius:</span>
+                            <span class="text-gray-900 dark:text-white font-medium">${courses.length}</span>
                         </div>
                     </div>
                 </div>
@@ -184,43 +146,60 @@ class GPACalculator {
         this.gpaResult.innerHTML = resultsHTML;
     }
 
-    getLetterGrade(grade) {
-        if (grade === 4.0) return 'A';
-        if (grade === 3.7) return 'A-';
-        if (grade === 3.3) return 'B+';
-        if (grade === 3.0) return 'B';
-        if (grade === 2.7) return 'B-';
-        if (grade === 2.3) return 'C+';
-        if (grade === 2.0) return 'C';
-        if (grade === 1.7) return 'C-';
-        if (grade === 1.3) return 'D+';
-        if (grade === 1.0) return 'D';
-        return 'F';
+    async saveAverageToProfile(average) {
+        try {
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            
+            if (authError || !user) {
+                console.error('Authentication error:', authError);
+                return;
+            }
+
+            const { error } = await supabase
+                .from('profiles')
+                .upsert({
+                    id: user.id,
+                    gpa: parseFloat(average),
+                    updated_at: new Date().toISOString()
+                });
+
+            if (error) {
+                console.error('Error saving average:', error);
+                return;
+            }
+
+            // Show success message
+            Toastify({
+                text: "Vidurkis sėkmingai išsaugotas",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#10B981",
+            }).showToast();
+
+        } catch (error) {
+            console.error('Error in saveAverageToProfile:', error);
+            Toastify({
+                text: "Klaida išsaugant vidurkį",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#EF4444",
+            }).showToast();
+        }
     }
 }
 
 // Initialize GPA Calculator when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Load the GPA Calculator HTML - update the path to be relative to main-page.html
-    fetch('./gpa-calculator/gpa-calculator.html')
-        .then(response => response.text())
-        .then(html => {
-            document.body.insertAdjacentHTML('beforeend', html);
-            
-            // Initialize the calculator
-            const calculator = new GPACalculator();
-            
-            // Add click event to the GPA Calculator link using ID
-            const gpaLink = document.getElementById('gpaCalculatorLink');
-            
-            if (gpaLink) {
-                gpaLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    calculator.openModal();
-                });
-            } else {
-                console.error('GPA Calculator link not found');
-            }
-        })
-        .catch(error => console.error('Error loading GPA Calculator:', error));
+    const calculator = new GPACalculator();
+    
+    // Add click event listener to the GPA calculator link
+    const gpaCalculatorLink = document.getElementById('gpaCalculatorLink');
+    if (gpaCalculatorLink) {
+        gpaCalculatorLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            calculator.openModal();
+        });
+    }
 }); 

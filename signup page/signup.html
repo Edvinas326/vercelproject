@@ -1,106 +1,280 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="lt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Registracija</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="signup-styles.css">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         const { createClient } = supabase
     </script>
-    <script src="signup.js"></script>
+    <script type="module" src="signup.js"></script>
+    <style>
+        body {
+            background: #f5f7fa;
+            display: flex; 
+            height: 100vh; 
+            margin: 0;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Background elements */
+        .bg-shape {
+            position: absolute;
+            z-index: 0;
+        }
+        
+        .bg-circle-1 {
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4776E6, #8E54E9);
+            top: -300px;
+            right: -200px;
+            opacity: 0.7;
+        }
+        
+        .bg-circle-2 {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #42a5f5, #4776E6);
+            bottom: -200px;
+            left: -150px;
+            opacity: 0.6;
+        }
+        
+        .bg-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%234776E6' fill-opacity='0.3' d='M0,192L60,197.3C120,203,240,213,360,229.3C480,245,600,267,720,261.3C840,256,960,224,1080,208C1200,192,1320,192,1380,192L1440,192L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+            z-index: 0;
+        }
+        
+        .login-container {
+            max-width: 380px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 10px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            margin: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .login-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .login-container::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        
+        /* Compact form styling */
+        .mb-3 {
+            margin-bottom: 0.5rem !important;
+        }
+        
+        input, select {
+            padding: 0.35rem 0.5rem !important;
+            font-size: 0.875rem !important;
+            background: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        label {
+            font-size: 0.8rem !important;
+            margin-bottom: 0.1rem !important;
+        }
+        
+        .py-2 {
+            padding-top: 0.35rem !important;
+            padding-bottom: 0.35rem !important;
+        }
+        
+        .floating-squares {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .square {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(1px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: float 15s infinite linear;
+        }
+        
+        .square:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 20%;
+            animation-duration: 25s;
+            transform: rotate(10deg);
+        }
+        
+        .square:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 70%;
+            left: 80%;
+            animation-duration: 30s;
+            animation-delay: 2s;
+            transform: rotate(25deg);
+        }
+        
+        .square:nth-child(3) {
+            width: 40px;
+            height: 40px;
+            top: 40%;
+            left: 60%;
+            animation-duration: 20s;
+            animation-delay: 4s;
+            transform: rotate(45deg);
+        }
+        
+        .square:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            top: 80%;
+            left: 10%;
+            animation-duration: 22s;
+            animation-delay: 6s;
+            transform: rotate(15deg);
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="video-container">
-        <video class="background-video" autoplay loop muted>
-            <source src="../login page/login page assets/video/backgroundvideo.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+    <!-- Background elements -->
+    <div class="bg-shape bg-circle-1"></div>
+    <div class="bg-shape bg-circle-2"></div>
+    <div class="bg-wave"></div>
+    
+    <!-- Floating elements -->
+    <div class="floating-squares">
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
     </div>
+    
     <div class="login-container" id="signup-container">
-        <h2 class="text-3xl font-bold text-center mb-16">Create Account</h2>
+        <h2 class="text-xl font-bold text-center mb-4">Sukurti Paskyrą</h2>
         <form id="signup-form" class="w-full">
             <!-- Name Fields -->
-            <div class="flex gap-4 mb-4">
+            <div class="flex gap-2 mb-2">
                 <div class="w-1/2">
-                    <label for="first-name" class="block text-sm font-medium text-gray-700">First Name</label>
+                    <label for="first-name" class="block text-xs font-medium text-gray-700">Vardas</label>
                     <input type="text" id="first-name" name="first-name" required 
-                           class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500">
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500">
                 </div>
                 <div class="w-1/2">
-                    <label for="last-name" class="block text-sm font-medium text-gray-700">Last Name</label>
+                    <label for="last-name" class="block text-xs font-medium text-gray-700">Pavardė</label>
                     <input type="text" id="last-name" name="last-name" required 
-                           class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500">
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500">
                 </div>
             </div>
 
             <!-- Username -->
-            <div class="mb-4">
-                <label for="signup-username" class="block text-sm font-medium text-gray-700">Username</label>
+            <div class="mb-2">
+                <label for="signup-username" class="block text-xs font-medium text-gray-700">Vartotojo Vardas</label>
                 <input type="text" id="signup-username" name="username" required 
-                       class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500">
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500">
             </div>
 
             <!-- Email -->
-            <div class="mb-4">
-                <label for="signup-email" class="block text-sm font-medium text-gray-700">Email</label>
+            <div class="mb-2">
+                <label for="signup-email" class="block text-xs font-medium text-gray-700">El. Paštas</label>
                 <input type="email" id="signup-email" name="email" required 
-                       class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500">
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500">
             </div>
 
             <!-- Role Selection -->
-            <div class="mb-4">
-                <label for="signup-role" class="block text-sm font-medium text-gray-700">Role</label>
+            <div class="mb-2">
+                <label for="signup-role" class="block text-xs font-medium text-gray-700">Rolė</label>
                 <select id="signup-role" name="role" required 
-                        class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500">
-                    <option value="">Select a role</option>
-                    <option value="student">Student</option>
-                    <option value="parent">Parent</option>
-                    <option value="teacher">Teacher</option>
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500">
+                    <option value="">Pasirinkite rolę</option>
+                    <option value="student">Mokinys</option>
+                    <option value="parent">Tėvas</option>
+                    <option value="teacher">Mokytojas</option>
                 </select>
             </div>
 
             <!-- Class Selection (Hidden by default) -->
-            <div id="class-selection" class="mb-4 hidden">
-                <label for="signup-class" class="block text-sm font-medium text-gray-700">Class</label>
+            <div id="class-selection" class="mb-2 hidden">
+                <label for="signup-class" class="block text-xs font-medium text-gray-700">Klasė</label>
                 <select id="signup-class" name="class" 
-                        class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500">
-                    <option value="">Select your class</option>
-                    <option value="class1">Class 1</option>
-                    <option value="class2">Class 2</option>
-                    <option value="class3">Class 3</option>
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500">
+                    <option value="">Pasirinkite savo klasę</option>
+                    <option value="class1">1 klasė</option>
+                    <option value="class2">2 klasė</option>
+                    <option value="class3">3 klasė</option>
                 </select>
             </div>
 
             <!-- Verification Code (Hidden by default) -->
-            <div id="verification-code-div" class="mb-4 hidden">
-                <label for="verification-code" class="block text-sm font-medium text-gray-700">Verification Code</label>
+            <div id="verification-code-div" class="mb-2 hidden">
+                <label for="verification-code" class="block text-xs font-medium text-gray-700">Patvirtinimo Kodas</label>
                 <input type="text" id="verification-code" name="verification-code" 
-                       placeholder="Enter teacher verification code"
-                       class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500">
-                <p class="text-sm text-gray-500 mt-1">Please enter the verification code provided by your school administrator</p>
+                       placeholder="Įveskite kodą"
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500">
+                <p class="text-xs text-gray-500 mt-0.5">Įveskite kodą iš mokyklos administratoriaus</p>
             </div>
 
             <!-- Password Fields -->
-            <div class="mb-4">
-                <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
+            <div class="mb-2">
+                <label for="signup-password" class="block text-xs font-medium text-gray-700">Slaptažodis</label>
                 <input type="password" id="signup-password" name="password" required 
-                       class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500">
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500">
             </div>
-            <div class="mb-4">
-                <label for="signup-confirm-password" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+            <div class="mb-2">
+                <label for="signup-confirm-password" class="block text-xs font-medium text-gray-700">Patvirtinkite Slaptažodį</label>
                 <input type="password" id="signup-confirm-password" name="confirm-password" required 
-                       class="mt-2 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500">
+                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-1 focus:ring-blue-500">
             </div>
 
-            <button type="submit" class="w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition duration-200">Sign Up</button>
-            <p id="signup-message" class="mt-4 text-red-500"></p>
+            <button type="submit" class="w-full bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200 text-sm">Registruotis</button>
+            <p id="signup-message" class="mt-1 text-red-500 text-xs"></p>
         </form>
-        <div class="mt-12 text-center">
-            <span class="text-gray-600 font-semibold">Already have an account? </span>
-            <button onclick="window.location.href='../login page/login.html'" class="signup-button w-full bg-blue-500 text-white font-semibold py-2 rounded-md hover:bg-blue-600 transition duration-200 mt-4">Login</button>
+        <div class="mt-3 text-center">
+            <span class="text-xs text-gray-600">Jau turite paskyrą? </span>
+            <button onclick="window.location.href='../login page/login.html'" class="signup-button w-full bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200 mt-1 text-sm">Prisijungti</button>
         </div>
     </div>
 </body>
