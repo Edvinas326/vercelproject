@@ -96,6 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
+            console.log('Attempting login with:', { email }); // Don't log password
+
             // Show loading state
             const messageEl = document.getElementById('login-message');
             messageEl.style.color = 'blue';
@@ -103,13 +105,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Use Supabase for authentication
             try {
+                console.log('Supabase URL:', supabase.supabaseUrl);
+                console.log('Making auth request...');
+                
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
                 
+                console.log('Auth response:', { 
+                    success: !error,
+                    error: error ? error.message : null,
+                    hasUser: !!data?.user
+                });
+                
                 if (error) {
-                    console.error('Login error:', error.message);
+                    console.error('Login error details:', {
+                        message: error.message,
+                        status: error.status,
+                        name: error.name
+                    });
                     messageEl.style.color = 'red';
                     messageEl.innerText = error.message || 'Invalid email or password';
                     return;
