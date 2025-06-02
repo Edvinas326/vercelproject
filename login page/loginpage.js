@@ -1,5 +1,5 @@
 // Using Supabase for authentication
-import supabase from '../supabase-config.js';
+import supabase from '/supabase-config.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM fully loaded");
@@ -12,17 +12,17 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Testing directory access...");
         
         // Test main page path
-        fetch('../main-page/main-page.html', { method: 'HEAD' })
+        fetch('/main-page/main-page.html', { method: 'HEAD' })
             .then(() => console.log("Main page accessible"))
             .catch(() => console.log("Main page NOT accessible"));
             
         // Test teacher dashboard path
-        fetch('../main-page/teacher/dashboard.html', { method: 'HEAD' })
+        fetch('/main-page/teacher/dashboard.html', { method: 'HEAD' })
             .then(() => console.log("Teacher dashboard accessible"))
             .catch(() => console.log("Teacher dashboard NOT accessible"));
             
         // Test admin dashboard path
-        fetch('../main-page/admin/admin.html', { method: 'HEAD' })
+        fetch('/main-page/admin/admin.html', { method: 'HEAD' })
             .then(() => console.log("Admin dashboard accessible"))
             .catch(() => console.log("Admin dashboard NOT accessible"));
     };
@@ -151,13 +151,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         try {
                             if (userRole === 'teacher') {
                                 // Redirect teachers to teacher dashboard
-                                navigateToPage('../main-page/teacher/dashboard.html');
+                                navigateToPage('/main-page/teacher/dashboard.html');
                             } else if (userRole === 'admin') {
                                 // Redirect admin to admin panel
-                                navigateToPage('../main-page/admin/admin.html');
+                                navigateToPage('/main-page/admin/admin.html');
                             } else {
                                 // Redirect students to student dashboard
-                                navigateToPage('../main-page/student/dashboard.html');
+                                navigateToPage('/main-page/student/dashboard.html');
                             }
                             console.log("Redirection initiated");
                         } catch (error) {
@@ -180,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (showSignupButton) {
         showSignupButton.addEventListener('click', () => {
             console.log("Sign up button clicked");
-            window.location.href = '../signup page/signup.html';
+            window.location.href = '/signup page/signup.html';
         });
     }
 
@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (signupButton) {
         signupButton.removeAttribute('onclick');
         signupButton.addEventListener('click', () => {
-            navigateToPage('../signup page/signup.html');
+            navigateToPage('/signup page/signup.html');
         });
     }
 });
